@@ -35,9 +35,10 @@ module nemsio_gfs
   real(dblekind),parameter:: dblefill=-9999._dblekind
 !
   public intkind,realkind,dblekind,charkind8,charkind
-  public nemsio_gfs_wrtgrd,nemsio_gfs_wrtsfc,          &
+  public nemsio_gfsgrd_open,nemsio_gfssfc_open,        &
+         nemsio_gfs_wrtgrd,nemsio_gfs_wrtsfc,          &
          nemsio_gfs_rdgrd,nemsio_gfs_rdsfc,            &
-         nemsio_gfs_axheadv,getrecnumber,              &
+         nemsio_gfs_axheadv,                           &
          nemsio_gfs_algrd,nemsio_gfs_axgrd,            &
          nemsio_gfs_alsfc,nemsio_gfs_axsfc
  
@@ -45,8 +46,9 @@ module nemsio_gfs
   type,public:: nemsio_head
     integer(intkind):: version=intfill
     character(charkind8):: gtype=''
-    character(charkind8):: gdatatype=' '
-    character(charkind8):: modelname=' '
+    character(charkind8):: gdatatype='bin4'
+    character(charkind8):: modelname='GFS'
+    integer(intkind):: nmeta=12
     integer(intkind):: nrec=intfill
 
     integer(intkind):: nfday=intfill
@@ -68,6 +70,9 @@ module nemsio_gfs
     integer(intkind):: idsl=intfill
     integer(intkind):: idvm=intfill
     integer(intkind):: idrt=intfill
+    integer(intkind):: ntoz=intfill
+    integer(intkind):: ntcw=intfill
+    integer(intkind):: ncld=intfill
 
     integer(intkind):: itrun=intfill
     integer(intkind):: iorder=intfill
@@ -103,6 +108,7 @@ module nemsio_gfs
     integer(intkind):: nmetaaryi=intfill
     integer(intkind):: nmetaaryr=intfill
     integer(intkind):: nmetaaryr8=intfill
+    integer(intkind):: nmetaaryc=intfill
     
   end type nemsio_head
 
@@ -129,6 +135,7 @@ module nemsio_gfs
     character(charkind),allocatable :: aryiname(:)
     character(charkind),allocatable :: aryrname(:)
     character(charkind),allocatable :: aryr8name(:)
+    character(charkind),allocatable :: arycname(:)
     integer(intkind),allocatable    :: varival(:)
     integer(intkind),allocatable    :: aryilen(:)
     integer(intkind),allocatable    :: aryival(:,:)
@@ -140,8 +147,17 @@ module nemsio_gfs
     real(dblekind),allocatable      :: aryr8val(:,:)
     logical,allocatable             :: varlval(:)
     character(charkind),allocatable :: varcval(:)
+    integer(intkind),allocatable    :: aryclen(:)
+    character(charkind),allocatable :: arycval(:)
     
   end type nemsio_headv
+
+  character(charkind),dimension(18) :: aero_tracername=(/    &
+      "du001","du002","du003","du004","du005",                 &
+      "ss001","ss002","ss003","ss004","ss005",                 &
+      "dms",  "so2",  "so4",  "msa",  "bcphobic",              &
+      "bcphilic","ocphobic","ocphilic"/)
+
 
   type,public:: nemsio_data
 !sigma
@@ -290,6 +306,355 @@ module nemsio_gfs
 !
 contains
 
+!-----------------------------------------------------------------------   
+  subroutine nemsio_gfsgrd_open(gfile, filename, gaction, gfshead, gfsheadv, iret)
+!-----------------------------------------------------------------------   
+!
+    use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,            &
+                              nemsio_getheadvar, nemsio_open
+!
+    implicit none
+!
+    type(nemsio_gfile),intent(inout)   :: gfile
+    character*(*),intent(in)           :: filename
+    character*(*),intent(in)           :: gaction
+    type(nemsio_head),intent(inout)    :: gfshead
+    type(nemsio_headv),intent(inout)   :: gfsheadv
+    integer,intent(out)                :: iret
+    integer ios,ios1,i,k,levso,nrec,jrec
+    character(8) filetype, modelname
+!
+    if(trim(gaction)=="read" .or. trim(gaction)=="READ")then
+      call nemsio_open(gfile,trim(filename),'read',ios)
+      if(ios==0) then
+        call nemsio_getfilehead(gfile,gtype=filetype,modelname=modelname,iret=ios)
+        if ((TRIM(modelname)=='GFS'.or.TRIM(modelname)=='gfs') .and. ios==0) then
+
+!  open (read) nemsio grid file headers
+        call nemsio_getfilehead(gfile,                                                   &
+               idate=gfshead%idate, nfhour=gfshead%nfhour, nfminute=gfshead%nfminute, &
+               nfsecondn=gfshead%nfsecondn, nfsecondd=gfshead%nfsecondd,               &
+               version=gfshead%version, nrec=gfshead%nrec, dimx=gfshead%dimx,         &
+               dimy=gfshead%dimy, dimz=gfshead%dimz, jcap=gfshead%jcap,               &
+               ntrac=gfshead%ntrac, ncldt=gfshead%ncldt, nsoil=gfshead%nsoil,         &
+               idsl=gfshead%idsl, idvc=gfshead%idvc, idvm=gfshead%idvm,               &
+               idrt=gfshead%idrt, extrameta=gfshead%extrameta,                        &
+               nmetavari=gfshead%nmetavari, nmetavarr=gfshead%nmetavarr,              &
+               nmetavarl=gfshead%nmetavarl, nmetavarr8=gfshead%nmetavarr8,              &
+               nmetaaryi=gfshead%nmetaaryi, nmetaaryr=gfshead%nmetaaryr,              &
+               iret=ios)
+
+        call nemsio_getheadvar(gfile,'fhour', gfshead%fhour,iret=ios)
+        if(ios/=0) gfshead%fhour=gfshead%nfhour+gfshead%nfminute/60.                  &
+     &    +gfshead%nfsecondn/(3600.*gfshead%nfsecondd)
+
+        call nemsio_getheadvar(gfile,'dimx', gfshead%latb,iret=ios)
+        call nemsio_getheadvar(gfile,'dimy', gfshead%LONB,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'LEVS', gfshead%LEVS,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'ITRUN', gfshead%ITRUN,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'IORDER', gfshead%IORDER,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'IREALF', gfshead%IREALF,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'IGEN', gfshead%IGEN,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'LATF', gfshead%LATF,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'LONF', gfshead%LONF,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'LATR', gfshead%LATR,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'LONR', gfshead%LONR,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'ICEN2', gfshead%ICEN2,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'IENS', gfshead%IENS,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'IDPP', gfshead%IDPP,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'IDVT', gfshead%IDVT,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'IDRUN', gfshead%IDRUN,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'IDUSR', gfshead%IDUSR,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'PDRYINI', gfshead%PDRYINI,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'IXGR', gfshead%IXGR,IRET=ios)
+        CALL NEMSIO_GETHEADVAR(GFILE,'NVCOORD', gfshead%NVCOORD,IRET=ios)
+
+        call nemsio_gfs_alheadv(gfshead,gfsheadv)
+        
+        CALL NEMSIO_GETFILEHEAD(GFILE                 &
+     &,        RECNAME=gfsheadv%RECNAME              &
+     &,        RECLEVTYP=gfsheadv%RECLEVTYP          &
+     &,        RECLEV=gfsheadv%RECLEV                &
+     &,        VCOORD=gfsheadv%VCOORD                &
+     &,        LAT=gfsheadv%LAT                      &
+     &,        LON=gfsheadv%LON                      &
+     &,        CPI=gfsheadv%CPI                      &
+     &,        RI=gfsheadv%RI                        &
+     &,        variname=gfsheadv%variname            &
+     &,        varrname=gfsheadv%varrname            &
+     &,        varlname=gfsheadv%varlname            &
+     &,        varival=gfsheadv%varival              &
+     &,        varrval=gfsheadv%varrval              &
+     &,        varlval=gfsheadv%varlval              &
+     &,        aryiname=gfsheadv%aryiname            &
+     &,        aryrname=gfsheadv%aryrname            &
+     &,        aryilen=gfsheadv%aryilen              &
+     &,        aryrlen=gfsheadv%aryrlen              &
+     &,        IRET=ios1)
+        if(gfshead%nmetaaryi>0) then
+          ALLOCATE(gfsheadv%aryival(maxval(gfsheadv%aryilen),       &
+     &     gfshead%nmetaaryi))
+          CALL NEMSIO_GETFILEHEAD(gfile,aryival=gfsheadv%aryival)
+        endif
+        if(gfshead%nmetaaryr>0) then
+          ALLOCATE(gfsheadv%aryrval(maxval(gfsheadv%aryrlen),       &
+     &     gfshead%nmetaaryr))
+          CALL NEMSIO_GETFILEHEAD(gfile,aryrval=gfsheadv%aryrval)
+        endif
+!jw        IF(IRET.NE.0 .OR. IRET1.NE.0) THEN
+        IF(gfshead%NVCOORD==-9999) THEN
+           gfshead%NVCOORD=3
+           if(maxval(gfsheadv%VCOORD(:,3,1))==0..and.                &
+     &       minval(gfsheadv%VCOORD(:,3,1))==0. ) then
+            gfshead%NVCOORD=2
+!jw for hyb: when no idsl is set
+            if(gfshead%IDSL==-9999)gfshead%IDSL=1
+            if(maxval(gfsheadv%VCOORD(:,2,1))==0. .and.              &
+     &       minval(gfsheadv%VCOORD(:,2,1))==0.) then
+            gfshead%NVCOORD=1
+            endif
+          endif
+        ENDIF
+
+        endif
+      else
+        print *,'nemsio read error, iret=',ios
+      endif
+    else
+! for write:
+           nrec=gfshead%nrec
+           if(allocated(gfsheadv%recname)) deallocate(gfsheadv%recname)
+           if(allocated(gfsheadv%reclevtyp)) deallocate(gfsheadv%reclevtyp)
+           if(allocated(gfsheadv%reclev)) deallocate(gfsheadv%reclev)
+           ALLOCATE(gfsheadv%RECNAME(nrec))
+           ALLOCATE(gfsheadv%RECLEVTYP(nrec))
+           ALLOCATE(gfsheadv%RECLEV(nrec))
+
+           levso=gfshead%dimz
+           gfsheadv%RECNAME(1)='hgt'
+           gfsheadv%RECNAME(2)='pres'
+           gfsheadv%RECNAME(3:(2+levso))='dpres'
+           gfsheadv%RECNAME((3+levso):(2+2*levso))='pres'
+           gfsheadv%RECNAME((3+2*levso):(2+3*levso))='ugrd'
+           gfsheadv%RECNAME((3+3*levso):(2+4*levso))='vgrd'
+           gfsheadv%RECNAME((3+4*levso):(2+5*levso))='tmp'
+           gfsheadv%RECNAME((3+5*levso):(2+6*levso))='spfh'
+           gfsheadv%RECNAME((3+6*levso):(2+7*levso))='o3mr'
+           gfsheadv%RECNAME((3+7*levso):(2+8*levso))='clwmr'
+           do i=1,gfshead%ntrac-3
+             gfsheadv%RECNAME((3+(i+7)*levso):(2+(i+8)*levso))=aero_tracername(i)
+           enddo
+           if(gfshead%nrec>(2+(5+gfshead%ntrac)*levso)) then
+              gfsheadv%RECNAME((3+(5+gfshead%ntrac)*levso):(2+(6+gfshead%ntrac)*levso))='vvel'
+           endif
+           gfsheadv%RECLEVTYP(1:2)='sfc'
+           gfsheadv%RECLEVTYP(3:nrec)='mid layer'
+           gfsheadv%RECLEV(1:2)=1
+           do i=1,gfshead%nrec/levso
+            DO K=1,levso
+              jrec=2+(i-1)*levso+k
+              gfsheadv%RECLEV(2+(i-1)*levso+k)=K
+            ENDDO
+           ENDDO
+
+         CALL NEMSIO_OPEN(gfile,TRIM(filename),'write'            &
+     &,        MODELNAME="GFS"                                      &
+     &,        GDATATYPE=gfshead%gdatatype                          &
+     &,        NFHOUR=gfshead%NFHOUR                                &
+     &,        NFMINUTE=gfshead%NFMINUTE                            &
+     &,        NFSECONDN=gfshead%NFSECONDN                          &
+     &,        NFSECONDD=gfshead%NFSECONDD                          &
+     &,        IDATE=gfshead%IDATE                                  &
+     &,        nrec=gfshead%nrec                                    &
+     &,        DIMX=gfshead%DIMX                                    &
+     &,        DIMY=gfshead%DIMY                                    &
+     &,        DIMZ=gfshead%DIMZ                                    &
+     &,        JCAP=gfshead%JCAP                                    &
+     &,        NTRAC=gfshead%NTRAC                                  &
+     &,        IDSL=gfshead%IDSL                                    &
+     &,        IDVC=gfshead%IDVC                                    &
+     &,        IDVM=gfshead%IDVM                                    &
+     &,        NCLDT=gfshead%NCLDT                                  &
+     &,        IDRT=gfshead%IDRT                                    &
+     &,        RECNAME=gfsheadv%RECNAME                              &
+     &,        RECLEVTYP=gfsheadv%RECLEVTYP                          &
+     &,        RECLEV=gfsheadv%RECLEV                                &
+     &,        VCOORD=gfsheadv%VCOORD                                &
+     &,        LON=gfsheadv%LON                                      &
+     &,        LAT=gfsheadv%LAT                                      &
+     &,        CPI=gfsheadv%CPI                                      &
+     &,        RI=gfsheadv%RI                                        &
+     &,        EXTRAMETA=gfshead%EXTRAMETA                          &
+     &,        NMETAVARI=gfshead%NMETAVARI                          &
+     &,        NMETAVARR=gfshead%NMETAVARR                          &
+     &,        NMETAVARL=gfshead%NMETAVARL                          &
+     &,        NMETAARYI=gfshead%NMETAARYI                          &
+     &,        NMETAARYR=gfshead%NMETAARYR                          &
+     &,        VARINAME=gfsheadv%VARINAME                            &
+     &,        VARIVAL=gfsheadv%VARIVAL                              &
+     &,        VARRNAME=gfsheadv%VARRNAME                            &
+     &,        VARRVAL=gfsheadv%VARRVAL                              &
+     &,        VARLNAME=gfsheadv%VARLNAME                            &
+     &,        VARLVAL=gfsheadv%VARLVAL                              &
+     &,        ARYINAME=gfsheadv%ARYINAME                            &
+     &,        ARYILEN=gfsheadv%ARYILEN                              &
+     &,        ARYIVAL=gfsheadv%ARYIVAL                              &
+     &,        ARYRNAME=gfsheadv%ARYRNAME                            &
+     &,        ARYRLEN=gfsheadv%ARYRLEN                              &
+     &,        ARYRVAL=gfsheadv%ARYRVAL                              &
+     &,        IRET=ios)                                     
+        iret = ios
+        IF(ios.NE.0) THEN
+            PRINT*, ' ERROR AT NEMSIO_OPEN ',trim(filename),'iret=',ios
+            CALL ERREXIT(4)
+        ENDIF
+    endif
+!
+  end subroutine nemsio_gfsgrd_open
+!
+!-----------------------------------------------------------------------
+  subroutine nemsio_gfssfc_open(gfile, filename, gaction, gfshead, gfsheadv, iret)
+!-----------------------------------------------------------------------
+!
+    use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,   &
+                              nemsio_open,nemsio_getheadvar
+!
+    implicit none
+!
+    type(nemsio_gfile),intent(inout)   :: gfile
+    character*(*),intent(in)           :: filename
+    character*(*),intent(in)           :: gaction
+    type(nemsio_head),intent(inout)    :: gfshead
+    type(nemsio_headv),intent(inout)   :: gfsheadv
+    integer,intent(out)                :: iret
+    integer ios,ios1,nrec
+!
+    if(trim(gaction)=="read" .or. trim(gaction)=="READ")then
+      call nemsio_open(gfile,trim(filename),'read',ios)
+      if(ios==0) then
+
+       CALL NEMSIO_GETFILEHEAD(gfile                      &
+     &,        MODELNAME=gfshead%MODELNAME                &
+     &,        NMETA=gfshead%NMETA                        &
+     &,        IDATE=gfshead%IDATE                        &
+     &,        NFHOUR=gfshead%NFHOUR                      &
+     &,        NFMINUTE=gfshead%NFMINUTE                  &
+     &,        NFSECONDN=gfshead%NFSECONDN                &
+     &,        NFSECONDD=gfshead%NFSECONDD                &
+     &,        VERSION=gfshead%VERSION                    &
+     &,        nrec=gfshead%nrec                          &
+     &,        DIMX=gfshead%dimx                          &
+     &,        DIMY=gfshead%dimy                          &
+     &,        DIMZ=gfshead%DIMZ                          &
+     &,        NSOIL=gfshead%NSOIL                        &
+     &,        IDRT=gfshead%IDRT                          &
+     &,        IDVM=gfshead%IDVM                          &
+     &,        NCLDT=gfshead%NCLDT                        &
+     &,        extrameta=gfshead%extrameta                &
+     &,        nmetavari=gfshead%nmetavari                &
+     &,        nmetavarr=gfshead%nmetavarr                &
+     &,        nmetaaryi=gfshead%nmetaaryi                &
+     &,        nmetaaryr=gfshead%nmetaaryr                &
+     &,        IRET=ios)
+
+       
+       CALL NEMSIO_GETHEADVAR(gfile,'irealf',gfshead%irealf,IRET)
+       ALLOCATE(gfsheadv%LPL((gfshead%LATB+1)/2) )
+       ALLOCATE(gfsheadv%ZSOIL(gfshead%NSOIL))
+       CALL NEMSIO_GETHEADVAR(gfile,'lpl',gfsheadv%LPL,IRET)
+       CALL NEMSIO_GETHEADVAR(gfile,'zsoil',gfsheadv%ZSOIL,IRET)
+       CALL NEMSIO_GETHEADVAR(gfile,'IVSSFC',gfshead%IVS,IRET)
+       CALL NEMSIO_GETHEADVAR(gfile,'fhour',gfshead%fhour,IRET)
+!
+       ALLOCATE(gfsheadv%RECNAME(gfshead%nrec))
+       ALLOCATE(gfsheadv%RECLEVTYP(gfshead%nrec))
+       ALLOCATE(gfsheadv%RECLEV(gfshead%nrec))
+       ALLOCATE(gfsheadv%variname(gfshead%nmetavari))
+       ALLOCATE(gfsheadv%varrname(gfshead%nmetavarr))
+       ALLOCATE(gfsheadv%varival(gfshead%nmetavari))
+       ALLOCATE(gfsheadv%varrval(gfshead%nmetavarr))
+       ALLOCATE(gfsheadv%aryiname(gfshead%nmetaaryi))
+       ALLOCATE(gfsheadv%aryrname(gfshead%nmetaaryr))
+       ALLOCATE(gfsheadv%aryilen(gfshead%nmetaaryi))
+       ALLOCATE(gfsheadv%aryrlen(gfshead%nmetaaryr))
+!
+        CALL NEMSIO_GETFILEHEAD(gfile                     &
+     &,        RECNAME=gfsheadv%RECNAME                   &
+     &,        RECLEVTYP=gfsheadv%RECLEVTYP               &
+     &,        RECLEV=gfsheadv%RECLEV                     &
+     &,        variname=gfsheadv%variname                 &
+     &,        varrname=gfsheadv%varrname                 &
+     &,        varival=gfsheadv%varival                   &
+     &,        varrval=gfsheadv%varrval                   &
+     &,        aryiname=gfsheadv%aryiname                 &
+     &,        aryrname=gfsheadv%aryrname                 &
+     &,        aryilen=gfsheadv%aryilen                   &
+     &,        aryrlen=gfsheadv%aryrlen                   &
+     &,        IRET=ios1)
+        if(gfshead%nmetaaryi>0) then
+          ALLOCATE(gfsheadv%aryival(maxval(gfsheadv%aryilen),      &
+     &     gfshead%nmetaaryi))
+          CALL NEMSIO_GETFILEHEAD(gfile,aryival=gfsheadv%aryival,  &
+     &     iret=iret)
+        endif
+        if(gfshead%nmetaaryr>0) then
+          ALLOCATE(gfsheadv%aryrval(maxval(gfsheadv%aryrlen),      &
+     &     gfshead%nmetaaryr))
+          CALL NEMSIO_GETFILEHEAD(gfile,aryrval=gfsheadv%aryrval,  &
+     &         iret=iret)
+        endif
+
+       endif
+!
+      else
+!for write
+        CALL NEMSIO_OPEN(gfile,trim(filename),'write'               &
+     &,        MODELNAME="GFS"                                     &
+     &,        GDATATYPE="bin4"                                    &
+     &,        NFHOUR=gfshead%NFHOUR                               &
+     &,        NFMINUTE=gfshead%NFMINUTE                           &
+     &,        NFSECONDN=gfshead%NFSECONDN                         &
+     &,        NFSECONDD=gfshead%NFSECONDD                         &
+     &,        IDATE=gfshead%IDATE                                 &
+     &,        nrec=gfshead%nrec                                   &
+     &,        DIMX=gfshead%DIMX                                   &
+     &,        DIMY=gfshead%DIMY                                   &
+     &,        DIMZ=gfshead%DIMZ                                   &
+     &,        NSOIL=gfshead%NSOIL                                 &
+     &,        NMETA=gfshead%NMETA                                 &
+     &,        IDRT=gfshead%IDRT                                   &
+     &,        IDVM=gfshead%IDVM                                   &
+     &,        NCLDT=gfshead%NCLDT                                 &
+     &,        RECNAME=gfsheadv%RECNAME                            &
+     &,        RECLEVTYP=gfsheadv%RECLEVTYP                        &
+     &,        RECLEV=gfsheadv%RECLEV                              &
+     &,        EXTRAMETA=gfshead%EXTRAMETA                         &
+     &,        NMETAVARI=gfshead%NMETAVARI                         &  
+     &,        NMETAVARR=gfshead%NMETAVARR                         &
+     &,        NMETAARYI=gfshead%NMETAARYI                         &
+     &,        NMETAARYR=gfshead%NMETAARYR                         &
+     &,        VARINAME=gfsheadv%VARINAME                          &
+     &,        VARIVAL=gfsheadv%VARIVAL                            &
+     &,        VARRNAME=gfsheadv%VARRNAME                          &
+     &,        VARRVAL=gfsheadv%VARRVAL                            &
+     &,        ARYINAME=gfsheadv%ARYINAME                          &
+     &,        ARYILEN=gfsheadv%ARYILEN                            &
+     &,        ARYIVAL=gfsheadv%ARYIVAL                            &
+     &,        ARYRNAME=gfsheadv%ARYRNAME                          &
+     &,        ARYRLEN=gfsheadv%ARYRLEN                            &
+     &,        ARYRVAL=gfsheadv%ARYRVAL                            &
+     &,        IRET=ios)
+        IF(ios.NE.0) THEN
+          PRINT*, ' ERROR AT NEMSIO_OPEN chgres.out.sfn '
+          CALL ERREXIT(4)
+        ENDIF
+
+       endif
+
+!
+  end subroutine nemsio_gfssfc_open
+!
+!
 !-----------------------------------------------------------------------   
   subroutine nemsio_gfs_aldbta_sfc(im,jm,lsoil,nemsiodbta)
 !-----------------------------------------------------------------------   
@@ -496,6 +861,45 @@ contains
     deallocate(nemsiodata%orog)
 
   end subroutine nemsio_gfs_axdata_sfc
+!
+!-----------------------------------------------------------------------
+  subroutine nemsio_gfs_alheadv(nemsiohead,nemsioheadv)
+!-----------------------------------------------------------------------
+!
+    implicit none
+!
+    type(nemsio_head),intent(in)      :: nemsiohead
+    type(nemsio_headv),intent(inout)  :: nemsioheadv
+    integer dimx,dimy,dimz,fieldsize
+!
+    allocate(nemsioheadv%vcoord(nemsiohead%dimz+1,3,2))
+    dimx=nemsiohead%dimx
+    dimy=nemsiohead%dimy
+    dimz=nemsiohead%dimz
+    fieldsize=dimx*dimy
+
+    allocate(nemsioheadv%lat(fieldsize))
+    allocate(nemsioheadv%lon(fieldsize))
+    allocate(nemsioheadv%dx(fieldsize))
+    allocate(nemsioheadv%dy(fieldsize))
+    allocate(nemsioheadv%cpi(nemsiohead%ntrac+1))
+    allocate(nemsioheadv%ri(nemsiohead%ntrac+1))
+    allocate(nemsioheadv%recname(nemsiohead%nrec))
+    allocate(nemsioheadv%reclevtyp(nemsiohead%nrec))
+    allocate(nemsioheadv%reclev(nemsiohead%nrec))
+!
+    if(nemsiohead%nmetavari>0) allocate(nemsioheadv%variname(nemsiohead%nmetavari))
+    if(nemsiohead%nmetavari>0) allocate(nemsioheadv%varival(nemsiohead%nmetavari))
+    if(nemsiohead%nmetavarr>0) allocate(nemsioheadv%varrname(nemsiohead%nmetavarr))
+    if(nemsiohead%nmetavarr>0) allocate(nemsioheadv%varrval(nemsiohead%nmetavarr))
+    if(nemsiohead%nmetavarl>0) allocate(nemsioheadv%varlname(nemsiohead%nmetavarl))
+    if(nemsiohead%nmetavarl>0) allocate(nemsioheadv%varlval(nemsiohead%nmetavarl))
+    if(nemsiohead%nmetaaryi>0) allocate(nemsioheadv%aryiname(nemsiohead%nmetaaryi))
+    if(nemsiohead%nmetaaryi>0) allocate(nemsioheadv%aryilen(nemsiohead%nmetaaryi))
+    if(nemsiohead%nmetaaryr>0) allocate(nemsioheadv%aryrname(nemsiohead%nmetaaryr))
+    if(nemsiohead%nmetaaryr>0) allocate(nemsioheadv%aryrlen(nemsiohead%nmetaaryr))
+
+  end subroutine nemsio_gfs_alheadv
 !
 !-----------------------------------------------------------------------
   subroutine nemsio_gfs_axheadv(nemsioheadv)
@@ -1928,7 +2332,9 @@ contains
 !-----------------------------------------------------------------------
 !
     use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,          &
-                              nemsio_readrecv,nemsio_readrec,nemsio_getrechead
+                              nemsio_readrecv,nemsio_readrec,           &
+                              nemsio_getrechead,nemsio_getheadvar,      &
+                              nemsio_searchrecv
     implicit none
 !
     type(nemsio_gfile),intent(inout) :: gfile
@@ -1936,6 +2342,7 @@ contains
     integer, optional,intent(out)    :: iret
 !local
     integer im,jm,lm,n,nrec,l,fieldsize,ierr,jrec,vlev,mtrac,krec,ierr1
+    integer lrec,nt,ntrclev,ntoz,ntcw
     character(16) vname,vlevtyp
     real(dblekind),allocatable ::tmp(:)
 !
@@ -1950,9 +2357,16 @@ contains
     endif
     fieldsize=im*jm
     allocate(tmp(fieldsize))
+    lrec=0
+!
+    ntoz=2;ntcw=3
+    call nemsio_getheadvar(gfile,'ntoz',ntoz,iret=ierr)
+    call nemsio_getheadvar(gfile,'ntcw',ntcw,iret=ierr)
+    print *,'in read8,ntcw=',ntcw,'iret=',ierr
 !hgt
     call nemsio_readrecv(gfile,'hgt','sfc',1,tmp,iret=ierr)
     if(ierr==0) then
+      lrec=lrec+1
       nemsiodbta%zs=reshape(tmp,(/im,jm/) )
     else
        if(present(iret)) iret=ierr
@@ -1961,6 +2375,7 @@ contains
 !ps
     call nemsio_readrecv(gfile,'pres','sfc',1,tmp,iret=ierr)
     if(ierr==0) then
+      lrec=lrec+1
       nemsiodbta%ps=reshape(tmp,(/im,jm/) )
     else
        if(present(iret)) iret=ierr
@@ -1970,6 +2385,7 @@ contains
     do l=1,lm
       call nemsio_readrecv(gfile,'dpres','mid layer',l,tmp,iret=ierr)
       if(ierr==0) then
+        lrec=lrec+1
         nemsiodbta%dp(:,:,l)=reshape(tmp,(/im,jm/) )
       else
         if(present(iret)) iret=ierr
@@ -1980,6 +2396,7 @@ contains
     do l=1,lm
       call nemsio_readrecv(gfile,'pres','mid layer',l,tmp,iret=ierr)
       if(ierr==0) then
+        lrec=lrec+1
         nemsiodbta%p(:,:,l)=reshape(tmp,(/im,jm/) )
       else
         if(present(iret)) iret=ierr
@@ -1990,6 +2407,7 @@ contains
     do l=1,lm
       call nemsio_readrecv(gfile,'ugrd','mid layer',l,tmp,iret=ierr)
       if(ierr==0) then
+        lrec=lrec+1
         nemsiodbta%u(:,:,l)=reshape(tmp,(/im,jm/) )
       else
         if(present(iret)) iret=ierr
@@ -2000,6 +2418,7 @@ contains
     do l=1,lm
       call nemsio_readrecv(gfile,'vgrd','mid layer',l,tmp,iret=ierr)
       if(ierr==0) then
+        lrec=lrec+1
         nemsiodbta%v(:,:,l)=reshape(tmp,(/im,jm/) )
       else
        if(present(iret)) iret=ierr
@@ -2010,45 +2429,92 @@ contains
     do l=1,lm
       call nemsio_readrecv(gfile,'tmp','mid layer',l,tmp,iret=ierr)
       if(ierr==0) then
+        lrec=lrec+1
         nemsiodbta%t(:,:,l)=reshape(tmp,(/im,jm/) )
       else
         if(present(iret)) iret=ierr
         print *, 'ERROR in rdgrd (t), iret=', ierr
       endif
     enddo
-!tracers
-    jrec=2+5*lm+1
-    call getrecnumber(gfile,'spfh','mid layer',1,krec,iret=ierr)
-    if(jrec/=krec) then
-       print *,'WARNING: spfh is not aft hgt,pressfc,dp,p,u,v,t'
-    endif
-    do n=1,mtrac
-      do l=1,lm
-        call nemsio_readrec(gfile,krec,tmp,iret=ierr)
-        call nemsio_getrechead(gfile,krec,vname,vlevtyp,vlev,iret=ierr1)
-        if(ierr==0.and.ierr1==0) then
-          nemsiodbta%q(:,:,l,n)=reshape(tmp,(/im,jm/) )
-          if(present(iret)) iret=0
-        else
-          if(present(iret)) iret=ierr
-          print *, 'ERROR in rdgrd krec=',krec,'field=',trim(vname),trim(vlevtyp),vlev,'iret=', ierr
-        endif
-        krec=krec+1
-      enddo
-    enddo
-!w
-    if(krec<nrec) then
+!
+!spfh
+    ntrclev=0
     do l=1,lm
-      call nemsio_readrecv(gfile,'vvel','mid layer',l,tmp,iret=ierr)
+      call nemsio_readrecv(gfile,'spfh','mid layer',l,tmp,iret=ierr)
       if(ierr==0) then
-        nemsiodbta%w(:,:,l)=reshape(tmp,(/im,jm/) )
+        lrec=lrec+1
+        nemsiodbta%q(:,:,l,1)=reshape(tmp,(/im,jm/) )
+        ntrclev = ntrclev + 1
       else
         if(present(iret)) iret=ierr
-        print *, 'ERROR in rdgrd (w), iret=', ierr
+        print *, 'ERROR in rdgrd (spfh), iret=', ierr
       endif
     enddo
+!
+!ozone
+    do l=1,lm
+      call nemsio_readrecv(gfile,'o3mr','mid layer',l,tmp,iret=ierr)
+      if(ierr==0) then
+        lrec=lrec+1
+        nemsiodbta%q(:,:,l,ntoz)=reshape(tmp,(/im,jm/) )
+        ntrclev = ntrclev + 1
+      else
+        if(present(iret)) iret=ierr
+        print *, 'ERROR in rdgrd (t), iret=', ierr
+      endif
+    enddo
+!
+!cld
+    do l=1,lm
+      call nemsio_readrecv(gfile,'clwmr','mid layer',l,tmp,iret=ierr)
+      if(ierr==0) then
+        lrec=lrec+1
+        nemsiodbta%q(:,:,l,ntcw)=reshape(tmp,(/im,jm/) )
+        ntrclev = ntrclev + 1
+      else
+        if(present(iret)) iret=ierr
+        print *, 'ERROR in rdgrd (t), iret=', ierr
+      endif
+    enddo
+!
+!aerosol tracers
+    jrec=0
+    nt=ntrclev/lm
+    do n=1,mtrac-3
+      vname=aero_tracername(n)
+      call nemsio_searchrecv(gfile,jrec,trim(vname),'mid layer',1,iret=ierr)
+      if (ierr==0) then
+        do l=1,lm
+          call nemsio_readrecv(gfile,trim(vname),'mid layer',l,tmp,iret=ierr)
+          if(ierr==0) then
+            lrec=lrec+1
+            nt=nt+1
+            nemsiodbta%q(:,:,l,nt)=reshape(tmp,(/im,jm/) )
+          else
+            print *,'ERROR in rdgrd (v), ',trim(vname),'level=',l,' iret=', ierr
+          endif
+        enddo
+      else
+        print *,'WARNING: no ',trim(vname),' in the file!'
+      endif
+    enddo
+    if(nt<mtrac) then
+      print *,'WARNING: ntrac=',mtrac,' but only read out:',nt,' tracers from the file!'
     endif
-    if(present(iret)) iret=0
+!
+    call nemsio_searchrecv(gfile,jrec,'vvel','mid layer',1,iret=ierr)
+    if(ierr==0) then
+      do l=1,lm
+        call nemsio_readrecv(gfile,'vvel','mid layer',l,tmp,iret=ierr)
+        if(ierr==0) then
+          lrec=lrec+1
+          nemsiodbta%w(:,:,l)=reshape(tmp,(/im,jm/) )
+        else
+          if(present(iret)) iret=ierr
+          print *, 'ERROR in rdgrd (w), iret=', ierr
+        endif
+      enddo
+    endif
 !
     deallocate(tmp)
 
@@ -2058,15 +2524,17 @@ contains
   subroutine nemsio_gfs_rdgrd4(gfile,nemsiodata,iret)
 !-----------------------------------------------------------------------
 !
-    use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,          &
-                              nemsio_readrecv,nemsio_readrec,nemsio_getrechead
+    use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,nemsio_getheadvar,          &
+                              nemsio_readrecv,nemsio_readrec,nemsio_getrechead,           &
+                              nemsio_searchrecv
     implicit none
 !
     type(nemsio_gfile),intent(inout)  :: gfile
     type(nemsio_data),intent(inout)   :: nemsiodata
     integer,optional, intent(out)     :: iret
 !local
-    integer im,jm,lm,n,l,nrec,fieldsize,ierr,jrec,vlev,mtrac,krec,ierr1
+    integer im,jm,lm,n,l,nrec,fieldsize,ierr,jrec,vlev,mtrac,krec,ierr1,nt
+    integer ntoz,ntcw,ntrclev
     character(16) vname,vlevtyp
     real(dblekind),allocatable ::tmp(:)
 !
@@ -2081,6 +2549,10 @@ contains
     endif
     fieldsize=im*jm
     allocate(tmp(fieldsize))
+!
+    ntoz=2;ntcw=3
+    call nemsio_getheadvar(gfile,'ntoz',ntoz,iret=ierr)
+    call nemsio_getheadvar(gfile,'ntcw',ntcw,iret=ierr)
 !hgt
     call nemsio_readrecv(gfile,'hgt','sfc',1,tmp,iret=ierr)
     if(ierr==0) then
@@ -2147,37 +2619,79 @@ contains
         print *, 'ERROR in rdgrd (t), iret=', ierr
       endif
     enddo
-!tracers
-    jrec=2+5*lm+1
-    call getrecnumber(gfile,'spfh','mid layer',1,krec,iret=ierr)
-    if(jrec/=krec) then
-       print *,'WARNING: spfh is not aft hgt,pressfc,dp,p,u,v,t'
-    endif
-    do n=1,mtrac
-      do l=1,lm
-        call nemsio_readrec(gfile,krec,tmp,iret=ierr)
-        call nemsio_getrechead(gfile,krec,vname,vlevtyp,vlev,iret=ierr1)
-        if(ierr==0.and.ierr1==0) then
-          nemsiodata%q(:,:,l,n)=reshape(tmp,(/im,jm/) )
-          if(present(iret)) iret=0
-        else
-          if(present(iret)) iret=ierr
-          print *, 'ERROR in rdgrd krec=',krec,'field=',trim(vname),trim(vlevtyp),vlev,'iret=', ierr
-        endif
-        krec=krec+1
-      enddo
-    enddo
-!w
-    if(krec<nrec) then
+!
+!spfh
+    ntrclev=0
     do l=1,lm
-      call nemsio_readrecv(gfile,'vvel','mid layer',l,tmp,iret=ierr)
+      call nemsio_readrecv(gfile,'spfh','mid layer',l,tmp,iret=ierr)
       if(ierr==0) then
-        nemsiodata%w(:,:,l)=reshape(tmp,(/im,jm/) )
+        nemsiodata%q(:,:,l,1)=reshape(tmp,(/im,jm/) )
+        ntrclev = ntrclev + 1
       else
         if(present(iret)) iret=ierr
-        print *, 'ERROR in rdgrd (w), iret=', ierr
+        print *, 'ERROR in rdgrd (spfh), iret=', ierr
       endif
     enddo
+!
+!ozone
+    do l=1,lm
+      call nemsio_readrecv(gfile,'o3mr','mid layer',l,tmp,iret=ierr)
+      if(ierr==0) then
+        nemsiodata%q(:,:,l,ntoz)=reshape(tmp,(/im,jm/) )
+        ntrclev = ntrclev + 1
+      else
+        if(present(iret)) iret=ierr
+        print *, 'ERROR in rdgrd (t), iret=', ierr
+      endif
+    enddo
+!
+!cld
+    do l=1,lm
+      call nemsio_readrecv(gfile,'clwmr','mid layer',l,tmp,iret=ierr)
+      if(ierr==0) then
+        nemsiodata%q(:,:,l,ntcw)=reshape(tmp,(/im,jm/) )
+        ntrclev = ntrclev + 1
+      else
+        if(present(iret)) iret=ierr
+        print *, 'ERROR in rdgrd (t), iret=', ierr
+      endif
+    enddo
+!
+!aerosol tracers
+    jrec=0
+    nt=ntrclev/lm
+    do n=1,mtrac-3
+      vname=aero_tracername(n)
+      call nemsio_searchrecv(gfile,jrec,trim(vname),'mid layer',1,iret=ierr)
+      if (ierr==0) then
+        do l=1,lm
+          call nemsio_readrecv(gfile,trim(vname),'mid layer',l,tmp,iret=ierr)
+          if(ierr==0) then
+            nt=nt+1
+            nemsiodata%q(:,:,l,nt)=reshape(tmp,(/im,jm/) )
+          else
+            print *,'ERROR in rdgrd (v), ',trim(vname),'level=',l,' iret=', ierr
+          endif
+        enddo
+      else
+        print *,'WARNING: no ',trim(vname),' in the file!'
+      endif
+    enddo
+    if(nt<mtrac) then
+      print *,'WARNING: ntrac=',mtrac,' but only read out:',nt,' tracers from the file!'
+    endif
+!
+    call nemsio_searchrecv(gfile,jrec,'vvel','mid layer',1,iret=ierr)
+    if(ierr==0) then
+      do l=1,lm
+        call nemsio_readrecv(gfile,'vvel','mid layer',l,tmp,iret=ierr)
+        if(ierr==0) then
+          nemsiodata%w(:,:,l)=reshape(tmp,(/im,jm/) )
+        else
+          if(present(iret)) iret=ierr
+          print *, 'ERROR in rdgrd (w), iret=', ierr
+        endif
+      enddo
     endif
 !
     if(present(iret)) iret=0
@@ -2190,7 +2704,9 @@ contains
 !-----------------------------------------------------------------------
 !
     use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,           &
-                              nemsio_writerecv,nemsio_writerec,nemsio_getrechead
+                              nemsio_writerecv,nemsio_writerec,          &
+                              nemsio_getrechead,nemsio_searchrecv,       &
+                              nemsio_getheadvar
     implicit none
 !
     type(nemsio_gfile),intent(inout)  :: gfile
@@ -2198,16 +2714,15 @@ contains
     integer, optional,intent(out)     :: iret
 !local
     integer im,jm,lm,n,l,jrec,nrec,fieldsize,ierr,mtrac,krec,vlev,ierr1
+    integer nt,ntoz,ntcw
     character(16) vname,vlevtyp
     real(dblekind),allocatable ::tmp(:)
 !
 !---read out data from nemsio file
 !
 
-    print *,'in wrtgrd8'
     call nemsio_getfilehead(gfile,dimx=im,dimy=jm,dimz=lm,     &
             nrec=nrec,ntrac=mtrac,iret=ierr)
-    print *,'in wrtgrd8,im=',im,'jm=',jm,'nrec=',nrec,'mtrac=',mtrac
     
     if(ierr/=0) then
        if(present(iret)) iret=ierr
@@ -2216,11 +2731,14 @@ contains
     endif
     fieldsize=im*jm
     allocate(tmp(fieldsize))
+!
+    ntoz=2;ntcw=3
+    call nemsio_getheadvar(gfile,'ntoz',ntoz,iret=ierr)
+    call nemsio_getheadvar(gfile,'ntcw',ntcw,iret=ierr)
+
 !hgt
     tmp=reshape(nemsiodbta%zs,(/fieldsize/) )
-    print *,'in wrtgrd, bf hgt=',maxval(tmp),minval(tmp)
     call nemsio_writerecv(gfile,'hgt','sfc',1,tmp,iret=ierr)
-    print *,'in wrtgrd, hgt=',maxval(tmp),minval(tmp),'iret=',ierr
     if(ierr/=0) then
       if(present(iret)) iret=ierr
       print *,'write hgt,ierr=',ierr
@@ -2277,40 +2795,70 @@ contains
         print *,'write l=',l,'tmp,ierr=',ierr
       endif
     enddo
-    print *,'br tracers'
-!tracers
-    jrec=2+5*lm+1
-    call getrecnumber(gfile,'spfh','mid layer',1,krec,iret=ierr)
-    if(jrec/=krec) then
-       print *,'WARNING: spfh is not aft hgt,pressfc,dp,p,u,v,t'
-    endif
-    do n=1,mtrac
-      do l=1,lm
-        tmp=reshape(nemsiodbta%q(:,:,l,n),(/fieldsize/) )
-        call nemsio_writerec(gfile,krec,tmp,iret=ierr)
-        call nemsio_getrechead(gfile,krec,vname,vlevtyp,vlev,ierr1)
-        if(ierr==0.and.ierr1==0) then
-          if(present(iret)) iret=0
-        else
-          if(present(iret)) iret=ierr
-          print *, 'ERROR in wrtgrd krec=',krec,'field=',trim(vname),trim(vlevtyp),vlev,'iret=', ierr
-        endif
-        krec=krec+1
-      enddo
-    enddo
-
-!w
-    if(krec<nrec) then
+!spfh
     do l=1,lm
-      tmp=reshape(nemsiodbta%w(:,:,l),(/fieldsize/) )
-      call nemsio_writerecv(gfile,'vvel','mid layer',l,tmp,iret=ierr)
+      tmp=reshape(nemsiodbta%q(:,:,l,1),(/fieldsize/) )
+      call nemsio_writerecv(gfile,'spfh','mid layer',l,tmp,iret=ierr)
       if(ierr/=0) then
         if(present(iret)) iret=ierr
-        print *,'write l=',l,'vvel,ierr=',ierr
+        print *,'write l=',l,'spfh,ierr=',ierr
       endif
     enddo
+!ozone
+    do l=1,lm
+      tmp=reshape(nemsiodbta%q(:,:,l,ntoz),(/fieldsize/) )
+      call nemsio_writerecv(gfile,'o3mr','mid layer',l,tmp,iret=ierr)
+      if(ierr/=0) then
+        if(present(iret)) iret=ierr
+        print *,'write l=',l,'o3mr,ierr=',ierr
+      endif
+    enddo
+!cld
+    do l=1,lm
+      tmp=reshape(nemsiodbta%q(:,:,l,ntcw),(/fieldsize/) )
+      call nemsio_writerecv(gfile,'clwmr','mid layer',l,tmp,iret=ierr)
+      if(ierr/=0) then
+        if(present(iret)) iret=ierr
+        print *,'write l=',l,' clwmr,ierr=',ierr
+      endif
+    enddo
+!aerosol tracers
+    nt=3
+    do n=1,mtrac-3
+      vname=aero_tracername(n)
+      call nemsio_searchrecv(gfile,jrec,trim(vname),'mid layer',1,iret=ierr)
+      if (ierr==0) then
+        do l=1,lm
+          nt=nt+1
+          tmp=reshape(nemsiodbta%q(:,:,l,nt),(/fieldsize/) )
+          call nemsio_writerecv(gfile,trim(vname),'mid layer',l,tmp,iret=ierr)
+          if(ierr/=0) then
+            if(present(iret)) iret=ierr
+            print *,'write rdgrd (v),',trim(vname),'level=',l,' iret=', ierr
+          endif
+        enddo
+      else
+        print *,'WARNING: no ',trim(vname),' in the file!'
+      endif
+    enddo
+    if(nt<mtrac) then
+      print *,'WARNING: ntrac=',mtrac,' but only read out:',nt,' tracers from the file!'
     endif
-    if(present(iret)) iret=0
+    if(present(iret)) iret=ierr
+
+!w
+    call nemsio_searchrecv(gfile,jrec,'vvel','mid layer',1,iret=ierr)
+    if(ierr==0) then
+      do l=1,lm
+        tmp=reshape(nemsiodbta%w(:,:,l),(/fieldsize/) )
+        call nemsio_writerecv(gfile,'vvel','mid layer',l,tmp,iret=ierr)
+        if(ierr/=0) then
+          if(present(iret)) iret=ierr
+          print *,'write l=',l,'vvel,ierr=',ierr
+        endif
+      enddo
+      if(present(iret)) iret=0
+    endif
 !
     deallocate(tmp)
 
@@ -2321,7 +2869,9 @@ contains
 !-----------------------------------------------------------------------
 !
     use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,           &
-                              nemsio_writerecv,nemsio_writerec,nemsio_getrechead
+                              nemsio_writerecv,nemsio_writerec,          &
+                              nemsio_getrechead,nemsio_searchrecv,       &
+                              nemsio_getheadvar
     implicit none
 !
     type(nemsio_gfile),intent(inout)  :: gfile
@@ -2329,6 +2879,7 @@ contains
     integer, optional,intent(out)     :: iret
 !local
     integer im,jm,lm,n,l,jrec,nrec,fieldsize,mtrac,ierr,vlev,krec,ierr1
+    integer nt,ntoz,ntcw
     character(16) vname,vlevtyp
     real(dblekind),allocatable ::tmp(:)
 !
@@ -2344,6 +2895,10 @@ contains
     endif
     fieldsize=im*jm
     allocate(tmp(fieldsize))
+!
+    ntoz=2;ntcw=3
+    call nemsio_getheadvar(gfile,'ntoz',ntoz,iret=ierr)
+    call nemsio_getheadvar(gfile,'ntcw',ntcw,iret=ierr)
 !hgt
     tmp=reshape(nemsiodata%zs,(/fieldsize/) )
     call nemsio_writerecv(gfile,'hgt','sfc',1,tmp,iret=ierr)
@@ -2405,128 +2960,75 @@ contains
         print *,'write l=',l,'tmp,ierr=',ierr
       endif
     enddo
-!tracers
-    jrec=2+5*lm+1
-    call getrecnumber(gfile,'spfh','mid layer',1,krec,iret=ierr)
-    if(jrec/=krec) then
-       print *,'WARNING: spfh is not aft hgt,pressfc,dp,p,u,v,t'
-    endif
-    do n=1,mtrac
-      do l=1,lm
-        tmp=reshape(nemsiodata%q(:,:,l,n),(/fieldsize/) )
-        call nemsio_writerec(gfile,krec,tmp,iret=ierr)
-        call nemsio_getrechead(gfile,krec,vname,vlevtyp,vlev,ierr1)
-        if(ierr==0.and.ierr1==0) then
-          if(present(iret)) iret=0
-        else
-          if(present(iret)) iret=ierr
-          print *, 'ERROR in wrtgrd krec=',krec,'field=',trim(vname),trim(vlevtyp),vlev,'iret=', ierr
-        endif
-        krec=krec+1
-      enddo
-    enddo
-
-!w
-    if(jrec<nrec) then
+!spfh
     do l=1,lm
-      tmp=reshape(nemsiodata%w(:,:,l),(/fieldsize/) )
-      call nemsio_writerecv(gfile,'vvel','mid layer',l,tmp,iret=ierr)
+      tmp=reshape(nemsiodata%q(:,:,l,1),(/fieldsize/) )
+      call nemsio_writerecv(gfile,'spfh','mid layer',l,tmp,iret=ierr)
       if(ierr/=0) then
         if(present(iret)) iret=ierr
-        print *,'write l=',l,'vvel,ierr=',ierr
+        print *,'write l=',l,'spfh,ierr=',ierr
       endif
     enddo
+!ozone
+    do l=1,lm
+      tmp=reshape(nemsiodata%q(:,:,l,ntoz),(/fieldsize/) )
+      call nemsio_writerecv(gfile,'o3mr','mid layer',l,tmp,iret=ierr)
+      if(ierr/=0) then
+        if(present(iret)) iret=ierr
+        print *,'write l=',l,'o3mr,ierr=',ierr
+      endif
+    enddo
+!cld
+    do l=1,lm
+      tmp=reshape(nemsiodata%q(:,:,l,ntcw),(/fieldsize/) )
+      call nemsio_writerecv(gfile,'clwmr','mid layer',l,tmp,iret=ierr)
+      if(ierr/=0) then
+        if(present(iret)) iret=ierr
+        print *,'write l=',l,' clwmr,ierr=',ierr
+      endif
+    enddo
+!aerosol tracers
+    nt=3*lm
+    do n=1,mtrac-3
+      vname=aero_tracername(n)
+      call nemsio_searchrecv(gfile,jrec,trim(vname),'mid layer',1,iret=ierr)
+      if (ierr==0) then
+        do l=1,lm
+          nt=nt+1
+          tmp=reshape(nemsiodata%q(:,:,l,nt),(/fieldsize/) )
+          call nemsio_writerecv(gfile,trim(vname),'mid layer',l,tmp,iret=ierr)
+          if(ierr/=0) then
+            if(present(iret)) iret=ierr
+            print *,'write rdgrd (v),',trim(vname),'level=',l,' iret=', ierr
+          endif
+        enddo
+      else
+        print *,'WARNING: no ',trim(vname),' in the file!'
+      endif
+    enddo
+    if(nt<mtrac) then
+      print *,'WARNING: ntrac=',mtrac,' but only read out:',nt,' tracers from the file!'
+    endif
+    if(present(iret)) iret=ierr
+!w
+    call nemsio_searchrecv(gfile,jrec,'vvel','mid layer',1,iret=ierr)
+    if(ierr==0) then
+      do l=1,lm
+        tmp=reshape(nemsiodata%w(:,:,l),(/fieldsize/) )
+        call nemsio_writerecv(gfile,'vvel','mid layer',l,tmp,iret=ierr)
+        if(ierr/=0) then
+          if(present(iret)) iret=ierr
+          print *,'write l=',l,'vvel,ierr=',ierr
+        endif
+      enddo
+      if(present(iret)) iret=ierr
     endif
 !
-   if(present(iret)) iret=ierr
 !
     deallocate(tmp)
 !-----------------------------------------------------------------------
   end subroutine nemsio_gfs_wrtgrd4
 !-----------------------------------------------------------------------
-  subroutine getrecnumber(gfile,vname,vlevtyp,vlev,jrec,iret)
-!
-   use nemsio_module, only : nemsio_gfile,nemsio_getfilehead
-   implicit none
-!
-   type(nemsio_gfile),intent(in) :: gfile
-   character(*),intent(in) :: vname,vlevtyp
-   integer,intent(in)  :: vlev
-   integer,intent(out) :: jrec
-   integer,intent(out),optional :: iret
-!
-   integer nrec,i,ierr
-   character(16),allocatable ::  recname(:),reclevtyp(:)
-   integer,allocatable ::  reclev(:)
-!
-   if(present(iret)) iret=-90
-   call nemsio_getfilehead(gfile,nrec=nrec,iret=ierr)
-   if(ierr/=0) then
-      if(present(iret)) then
-         return
-      else
-         print *,'WRONG: could not get nrec file nemsio file header'
-         stop
-      endif
-   endif
-!
-   allocate(recname(nrec),reclevtyp(nrec),reclev(nrec))
-   call nemsio_getfilehead(gfile,recname=recname,reclevtyp=reclevtyp,     &
-          reclev=reclev,iret=ierr)
-      if(ierr/=0) then
-      if(present(iret)) then
-         return
-      else
-         print *,'WRONG: could not get recname/levtyp/lev file nemsio file header'
-         stop
-      endif
-   endif
-!
-   jrec=0
-   DO i=1,nrec
-    if(lowercase(trim(vname))==lowercase(trim(recname(i))) .and.     &
-       lowercase(trim(vlevtyp))==lowercase(trim(reclevtyp(i))) .and. &
-       vlev==reclev(i)) then
-       jrec=i
-       exit
-    endif
-   enddo
-   if(jrec==0) then
-       print *,'WRONG: ',trim(vname),' ',trim(vlevtyp),' ',vlev,     &
-     &          ' can not be found in the file!'
-     return
-   endif
-!
-   deallocate(recname,reclevtyp,reclev)
-   iret=0
-
-  end subroutine getrecnumber
-!
-!-----------------------------------------------------------------------
-!
-     elemental function lowercase(word)
-!
-!-----------------------------------------------------------------------
-!
-! convert a word to lower case
-!
-      Character (len=32)              :: lowercase
-      Character (len=*) , intent(in) :: word
-      integer :: i,ic,nlen
-      nlen = len(word)
-      if(nlen >32) then
-        nlen=32
-      endif
-      lowercase(1:nlen)=word(1:nlen)
-      do i=1,nlen
-        ic = ichar(word(i:i))
-        if (ic >= 65 .and. ic < 91) lowercase(i:i) = char(ic+32)
-      end do
-      if(nlen<32) lowercase(nlen+1:)=' '
-!
-!-----------------------------------------------------------------------
-!
-      end function lowercase
 !
 !***********************************************************************
 !

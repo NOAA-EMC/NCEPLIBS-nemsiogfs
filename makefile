@@ -1,5 +1,5 @@
 
-LIBDIR = /nwprod/lib
+LIBDIR = .
 LIB     = $(LIBDIR)/libnemsiogfs.a
 INCMOD  = $(LIBDIR)/incmod/nemsiogfs
 
