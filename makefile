@@ -3,8 +3,8 @@ LIBDIR = .
 LIB     = $(LIBDIR)/libnemsiogfs.a
 INCMOD  = $(LIBDIR)/incmod/nemsiogfs
 
-FC      = ifort
-FFLAGS  = -O -FR -I/nwprod/lib/incmod/nemsio
+FC      = $(FCOMP)
+FFLAGS  = $(FCFLAGS)
 AR      = ar
 ARFLAGS = -rvu
 
