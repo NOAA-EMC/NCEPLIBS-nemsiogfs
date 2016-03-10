@@ -16,7 +16,7 @@ $(LIB): $(MODULES)
 	rm -f *.o
 
 clean:
-	rm -f *.o *.mod $(LIB)
+	rm -f *.o *.mod $(LIB) $(INCMOD)/*.mod
 
 .SUFFIXES:
 .SUFFIXES: .f90 .o
