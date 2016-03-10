@@ -1,32 +1,65 @@
 #!/bin/sh
 
 #-----------------------------------------------------
-# Build the nemsiogfs library on wcoss phase 1/2.
+# Build the nemsiogfs library on wcoss phase 1/2 or
+# wcoss-cray.  Invoke with no arguments:
+#
+# $> build.wcoss.sh
 #-----------------------------------------------------
 
-set -x
+#set -x
+
+export VER="v1.0.1"
+module purge
 
 mac=$(hostname -f)
 
 case $mac in
 
-  g????.ncep.noaa.gov | t????.ncep.noaa.gov)
+  g????.ncep.noaa.gov | t????.ncep.noaa.gov)  # wcoss phase 1/2
 
-    module purge
+    echo BUILD WITH INTEL COMPILER. 
 
-    module list
     module load ics/12.1
     module load nemsio/v2.2.2
+    module list
 
+    export LIBDIR='./${VER}/intel'
     export FCOMP=ifort
     export FCFLAGS='-O -FR -I$(NEMSIO_INC)'
 
     make clean
     make;;
 
-  llogin? | slogin?)
+  llogin? | slogin?)  # wcoss cray
 
-    echo COMING SOON! ;;
+    echo BUILD WITH INTEL COMPILER. 
+
+    module load PrgEnv-intel
+    module load craype-sandybridge
+    module load nemsio-intel/2.2.2
+    module list
+
+    export LIBDIR='./${VER}/intel'
+    export FCOMP=ftn
+    export FCFLAGS='-O -FR -I$(NEMSIO_INC) -axCore-AVX2 -craype-verbose'
+
+    make clean
+    make 
+ 
+    echo BUILD WITH CRAY COMPILER.
+
+    module swap PrgEnv-intel PrgEnv-cray
+    module swap craype-sandybridge craype-haswell
+    module swap nemsio-intel/2.2.2 nemsio-cray-haswell/2.2.2
+    module list
+
+    export LIBDIR='./${VER}/cray'
+    export FCOMP=ftn
+    export FCFLAGS='-O2 -ffree -I$(NEMSIO_INC) -craype-verbose'
+
+    make clean
+    make ;;
 
 esac
 

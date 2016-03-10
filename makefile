@@ -1,7 +1,6 @@
 
-LIBDIR = .
-LIB     = $(LIBDIR)/libnemsiogfs.a
-INCMOD  = $(LIBDIR)/incmod/nemsiogfs
+LIB     = $(LIBDIR)/libnemsiogfs_$(VER).a
+INCMOD  = $(LIBDIR)/include/nemsiogfs_$(VER)
 
 FC      = $(FCOMP)
 FFLAGS  = $(FCFLAGS)
@@ -16,7 +15,7 @@ $(LIB): $(MODULES)
 	rm -f *.o
 
 clean:
-	rm -f *.o *.mod $(LIB) $(INCMOD)/*.mod
+	rm -f *.o *.mod *.a $(LIB) $(INCMOD)/*.mod
 
 .SUFFIXES:
 .SUFFIXES: .f90 .o
