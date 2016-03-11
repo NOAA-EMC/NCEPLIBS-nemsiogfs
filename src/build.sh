@@ -24,9 +24,9 @@ case $mac in
     module load nemsio/v2.2.2
     module list
 
-    export LIBDIR='./${VER}/intel'
+    export LIBDIR='../intel'
     export FCOMP=ifort
-    export FCFLAGS='-O -FR -I$(NEMSIO_INC)'
+    export FCFLAGS='-O3 -FR -I$(NEMSIO_INC)'
 
     make clean
     make;;
@@ -40,9 +40,9 @@ case $mac in
     module load nemsio-intel/2.2.2
     module list
 
-    export LIBDIR='./${VER}/intel'
+    export LIBDIR='../intel'
     export FCOMP=ftn
-    export FCFLAGS='-O -FR -I$(NEMSIO_INC) -axCore-AVX2 -craype-verbose'
+    export FCFLAGS='-O3 -FR -I$(NEMSIO_INC) -axCore-AVX2 -craype-verbose'
 
     make clean
     make 
@@ -54,7 +54,7 @@ case $mac in
     module swap nemsio-intel/2.2.2 nemsio-cray-haswell/2.2.2
     module list
 
-    export LIBDIR='./${VER}/cray'
+    export LIBDIR='../cray'
     export FCOMP=ftn
     export FCFLAGS='-O2 -ffree -I$(NEMSIO_INC) -craype-verbose'
 
