@@ -2028,12 +2028,12 @@ contains
 !      print *,'ERROR in wrtsfc4 (cvt), iret=', ierr
 !    endif
 !!alvsf
-!    tmp=reshape(nemsiodata%alvsf,(/fieldsize/) )
-!    call nemsio_writerecv(gfile,'alvsf','sfc',1,tmp,iret=ierr)
-!    if(ierr/=0) then
-!      if(present(iret)) iret=ierr
-!      print *,'ERROR in wrtsfc4 (alvsf), iret=', ierr
-!    endif
+    tmp=reshape(nemsiodata%alvsf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'alvsf','sfc',1,tmp,iret=ierr)
+    if(ierr/=0) then
+      if(present(iret)) iret=ierr
+      print *,'ERROR in wrtsfc4 (alvsf), iret=', ierr
+    endif
 !alvwf
     tmp=reshape(nemsiodata%alvwf,(/fieldsize/) )
     call nemsio_writerecv(gfile,'alvwf','sfc',1,tmp,iret=ierr)
