@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh --login
 
 #-----------------------------------------------------
 # Build the nemsiogfs library on wcoss phase 1/2 or
@@ -9,7 +9,7 @@
 
 #set -x
 
-export VER="v1.0.1"
+export VER="v1.1.0"
 module purge
 
 mac=$(hostname -f)
@@ -57,6 +57,22 @@ case $mac in
     export LIBDIR='../cray'
     export FCOMP=ftn
     export FCFLAGS='-O2 -ffree -I$(NEMSIO_INC) -craype-verbose'
+
+    make clean
+    make ;;
+
+tfe??)  # theia
+
+    echo BUILD WITH INTEL COMPILER. 
+
+    module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
+    module load nemsio
+
+    module load intel/14.0.2
+
+    export LIBDIR='../intel'
+    export FCOMP=ifort
+    export FCFLAGS='-O3 -FR -I$(NEMSIO_INC)'
 
     make clean
     make ;;
