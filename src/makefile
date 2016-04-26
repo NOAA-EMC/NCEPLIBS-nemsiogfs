@@ -1,10 +1,9 @@
 
-LIBDIR = .
-LIB     = $(LIBDIR)/libnemsiogfs.a
-INCMOD  = $(LIBDIR)/incmod/nemsiogfs
+LIB     = $(LIBDIR)/libnemsiogfs_$(VER).a
+INCMOD  = $(LIBDIR)/include/nemsiogfs_$(VER)
 
-FC      = ifort
-FFLAGS  = -O -FR -I/nwprod/lib/incmod/nemsio
+FC      = $(FCOMP)
+FFLAGS  = $(FCFLAGS)
 AR      = ar
 ARFLAGS = -rvu
 
@@ -16,7 +15,7 @@ $(LIB): $(MODULES)
 	rm -f *.o
 
 clean:
-	rm -f *.o *.mod $(LIB)
+	rm -f *.o *.mod *.a $(LIB) $(INCMOD)/*.mod
 
 .SUFFIXES:
 .SUFFIXES: .f90 .o

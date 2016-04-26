@@ -1,0 +1,71 @@
+Release Notes
+-------------
+
+Library: nemsiogfs
+Version: 1.1.0
+Purpose: Performs i/o for the NEMS-GFS model.
+Developed by: NCEP/EMC
+Contact info:  NCEP.List.EMC.nceplibs.Developers@noaa.gov
+
+
+Change History
+--------------
+ v1.0.0 - Initial Version
+ v1.1.0 - Correct error in write of albedo ('alvsf' component) in routine
+          nemsio_gfs_wrfsfc4.  The write of 'alvsf' was inadvertently commented
+          out, which resulted in a field of all zereos being written to a nems output
+          file. Reorganize directories to better conform to NCO vertical structure.
+          New driver script to build code on all WCOSS machines.  Add TKE.
+          Create "_slg" versions of routines without p, dp and vvel.
+          Remove "_slg" versions and add nopdpvv option to exclude dp, p.
+          Use meta data header to decide which fields are read/written.
+
+
+Implementation Instructions on WCOSS-Phase 1/2
+----------------------------------------------
+ - cd to appropriate build directory
+ - checkout subversion tag: https://svnemc.ncep.noaa.gov/projects/nceplibs/nemsiogfs/tags/v1.1.0
+ - cd to the ./src directory
+ - type "build.sh" to build library with the Intel compiler.
+ - the library and include module will be placed in the following directory structure:
+
+      |
+      `--intel
+            |
+            `--libnemsiogfs_v1.1.0.a
+            |
+            `--include
+                  |
+                  `--nemsiogfs_v1.1.0
+                           |
+                           `--nemsio_gfs.mod
+
+
+Implementation Instructions on WCOSS-Cray
+-----------------------------------------
+ - cd to appropriate build directory
+ - checkout subversion tag: https://svnemc.ncep.noaa.gov/projects/nceplibs/nemsiogfs/tags/v1.1.0
+ - cd to the ./src directory
+ - type "build.sh".  Library will be built with Intel and Cray compilers.
+ - the library and include module will be placed in the following directory structure:
+
+      |
+      `--intel
+      |     |
+      |     `--libnemsiogfs_v1.1.0.a
+      |     |
+      |     `--include
+      |           |
+      |           `--nemsiogfs_v1.1.0
+      |                    |
+      |                    `--nemsio_gfs.mod
+      |
+      `--cray 
+            |
+            `--libnemsiogfs_v1.1.0.a
+            |
+            `--include
+                  |
+                  `--nemsiogfs_v1.1.0
+                           |
+                           `--NEMSIO_GFS.mod
