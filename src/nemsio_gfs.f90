@@ -6,7 +6,7 @@ module nemsio_gfs
 !                      chgres and sfccycle
 ! Abstract
 ! Program history log
-!   2009-07-07 Jun Wang  :  adopt from gfsio_rst(Fanglin Young), update to nemsio,
+!   2009-07-07 Jun Wang  :  adopt from gfsio_rst(Fanglin Yang), update to nemsio,
 !                           add read/wrt subroutines for 8byte real data for 
 !                           gaussian grid data and sfc data
 !   2010-09-24 Sarah Lu  :  add functions for 4byte real data for sfc file
