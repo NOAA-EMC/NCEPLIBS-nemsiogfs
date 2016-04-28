@@ -25,6 +25,7 @@ case $mac in
     module list
 
     export LIBDIR='../'
+    export INC='incmod'
     export FCOMP=ifort
     export FCFLAGS='-O3 -FR -I$(NEMSIO_INC)'
 
@@ -41,6 +42,7 @@ case $mac in
     module list
 
     export LIBDIR='../intel'
+    export INC='include'
     export FCOMP=ftn
     export FCFLAGS='-O3 -FR -I$(NEMSIO_INC) -axCore-AVX2 -craype-verbose'
 
@@ -55,6 +57,7 @@ case $mac in
     module list
 
     export LIBDIR='../cray'
+    export INC='include'
     export FCOMP=ftn
     export FCFLAGS='-O2 -ffree -I$(NEMSIO_INC) -craype-verbose'
 
@@ -71,6 +74,7 @@ tfe??)  # theia
     module load intel
 
     export LIBDIR='../'
+    export INC='incmod'
     export FCOMP=ifort
     export FCFLAGS='-O3 -FR -I$(NEMSIO_INC)'
 

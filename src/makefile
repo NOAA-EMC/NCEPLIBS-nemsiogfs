@@ -1,6 +1,6 @@
 
 LIB     = $(LIBDIR)/libnemsiogfs.a
-INCMOD  = $(LIBDIR)/incmod/nemsiogfs
+INCMOD  = $(LIBDIR)/$(INC)/nemsiogfs
 
 FC      = $(FCOMP)
 FFLAGS  = $(FCFLAGS)
