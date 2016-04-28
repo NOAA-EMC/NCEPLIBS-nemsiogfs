@@ -1,6 +1,6 @@
 
-LIB     = $(LIBDIR)/libnemsiogfs_$(VER).a
-INCMOD  = $(LIBDIR)/include/nemsiogfs_$(VER)
+LIB     = $(LIBDIR)/libnemsiogfs.a
+INCMOD  = $(LIBDIR)/incmod/nemsiogfs
 
 FC      = $(FCOMP)
 FFLAGS  = $(FCFLAGS)
@@ -11,6 +11,7 @@ MODULES  = nemsio_gfs.o
 
 $(LIB): $(MODULES)
 	$(AR) $(ARFLAGS) $@ $(MODULES)
+	mkdir -p $(INCMOD)
 	mv *.mod $(INCMOD)
 	rm -f *.o
 
