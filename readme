@@ -11,6 +11,7 @@ Contact info:  NCEP.List.EMC.nceplibs.Developers@noaa.gov
 Change History
 --------------
  v1.0.0 - Initial Version
+ v1.1.0 - Release the read and write order of GFS variables in nemsio files. 
  v2.0.0 - Correct error in write of albedo ('alvsf' component) in routine
           nemsio_gfs_wrfsfc4.  The write of 'alvsf' was inadvertently commented
           out, which resulted in a field of all zereos being written to a nems output
@@ -32,7 +33,7 @@ Implementation Instructions on WCOSS-Phase 1/2
             |
             `--libnemsiogfs.a
             |
-            `--incmod
+            `--include
                   |
                   `--nemsiogfs
                            |

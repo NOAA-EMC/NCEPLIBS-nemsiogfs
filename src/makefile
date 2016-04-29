@@ -11,11 +11,11 @@ MODULES  = nemsio_gfs.o
 
 $(LIB): $(MODULES)
 	$(AR) $(ARFLAGS) $@ $(MODULES)
-	mkdir -p $(INCMOD)
 	mv *.mod $(INCMOD)
 	rm -f *.o
 
 clean:
+	mkdir -p $(INCMOD)
 	rm -f *.o *.mod *.a $(LIB) $(INCMOD)/*.mod
 
 .SUFFIXES:
