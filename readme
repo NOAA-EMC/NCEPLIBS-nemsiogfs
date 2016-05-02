@@ -25,7 +25,7 @@ Change History
 Implementation Instructions on WCOSS-Phase 1/2
 ----------------------------------------------
  - cd to appropriate build directory
- - checkout subversion tag: https://svnemc.ncep.noaa.gov/projects/nceplibs/nemsiogfs/tags/v1.1.0
+ - checkout subversion tag: https://svnemc.ncep.noaa.gov/projects/nceplibs/nemsiogfs/tags/v2.0.0
  - cd to the ./src directory
  - type "build.sh" to build library with the Intel compiler.
  - the library and include module will be placed in the following directory structure:
