@@ -9,7 +9,7 @@
 
 #set -x
 
-export VER="v1.1.0"
+export VER="v2.0.0"
 module purge
 
 mac=$(hostname -f)
@@ -20,11 +20,12 @@ case $mac in
 
     echo BUILD WITH INTEL COMPILER. 
 
-    module load ics/12.1
+    module load ics
     module load nemsio/v2.2.2
     module list
 
-    export LIBDIR='../intel'
+    export LIBDIR='../'
+    export INC='include'
     export FCOMP=ifort
     export FCFLAGS='-O3 -FR -I$(NEMSIO_INC)'
 
@@ -41,6 +42,7 @@ case $mac in
     module list
 
     export LIBDIR='../intel'
+    export INC='include'
     export FCOMP=ftn
     export FCFLAGS='-O3 -FR -I$(NEMSIO_INC) -axCore-AVX2 -craype-verbose'
 
@@ -55,6 +57,7 @@ case $mac in
     module list
 
     export LIBDIR='../cray'
+    export INC='include'
     export FCOMP=ftn
     export FCFLAGS='-O2 -ffree -I$(NEMSIO_INC) -craype-verbose'
 
@@ -68,9 +71,10 @@ tfe??)  # theia
     module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
     module load nemsio
 
-    module load intel/14.0.2
+    module load intel
 
-    export LIBDIR='../intel'
+    export LIBDIR='../'
+    export INC='include'
     export FCOMP=ifort
     export FCFLAGS='-O3 -FR -I$(NEMSIO_INC)'
 
