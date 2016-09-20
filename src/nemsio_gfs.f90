@@ -313,7 +313,7 @@ module nemsio_gfs
 contains
 
 !-----------------------------------------------------------------------   
-  subroutine nemsio_gfsgrd_open(gfile, filename, gaction, gfshead, gfsheadv, iret)
+  subroutine nemsio_gfsgrd_open(gfile, filename, gaction, nopdpvv, gfshead, gfsheadv, iret)
 !-----------------------------------------------------------------------   
 !
     use nemsio_module, only : nemsio_gfile, nemsio_getfilehead,            &
@@ -324,6 +324,7 @@ contains
     type(nemsio_gfile),intent(inout)   :: gfile
     character*(*),intent(in)           :: filename
     character*(*),intent(in)           :: gaction
+    logical,intent(in)                 :: nopdpvv
     type(nemsio_head),intent(inout)    :: gfshead
     type(nemsio_headv),intent(inout)   :: gfsheadv
     integer,intent(out)                :: iret
@@ -437,6 +438,23 @@ contains
       ALLOCATE(gfsheadv%RECLEV(nrec))
 
       levso = gfshead%dimz
+!-----------------------
+      if (nopdpvv) then
+!-----------------------
+      gfsheadv%RECNAME(1) = 'hgt'
+      gfsheadv%RECNAME(2) = 'pres'
+      gfsheadv%RECNAME(3:(2+levso)) = 'ugrd'
+      gfsheadv%RECNAME((3+levso):(2+2*levso))  = 'vgrd'
+      gfsheadv%RECNAME((3+2*levso):(2+3*levso)) = 'tmp'
+      gfsheadv%RECNAME((3+3*levso):(2+4*levso)) = 'spfh'
+      gfsheadv%RECNAME((3+4*levso):(2+5*levso)) = 'o3mr'
+      gfsheadv%RECNAME((3+5*levso):(2+6*levso)) = 'clwmr'
+      do i=1,gfshead%ntrac-3
+        gfsheadv%RECNAME((3+(i+5)*levso):(2+(i+6)*levso)) = aero_tracername(i)
+      enddo
+!-----------------------
+      else
+!-----------------------
       gfsheadv%RECNAME(1) = 'hgt'
       gfsheadv%RECNAME(2) = 'pres'
       gfsheadv%RECNAME(3:(2+levso)) = 'dpres'
@@ -453,6 +471,10 @@ contains
       if(gfshead%nrec>(2+(5+gfshead%ntrac)*levso)) then
         gfsheadv%RECNAME((3+(5+gfshead%ntrac)*levso):(2+(6+gfshead%ntrac)*levso)) = 'vvel'
       endif
+!-----------------------
+      endif
+!-----------------------
+
       gfsheadv%RECLEVTYP(1:2) = 'sfc'
       gfsheadv%RECLEVTYP(3:nrec) = 'mid layer'
       gfsheadv%RECLEV(1:2) = 1

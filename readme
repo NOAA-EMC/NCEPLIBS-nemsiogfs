@@ -2,11 +2,11 @@ Release Notes
 -------------
 
 Library: nemsiogfs
-Version: 2.0.0
+Version: 2.0.1
 Purpose: Performs i/o for the NEMS-GFS model.
 Developed by: NCEP/EMC
 Contact info:  NCEP.List.EMC.nceplibs.Developers@noaa.gov
-
+               Hang.Lei@noaa.gov 
 
 Change History
 --------------
@@ -20,7 +20,8 @@ Change History
           Create "_slg" versions of routines without p, dp and vvel.
           Remove "_slg" versions and add nopdpvv option to exclude dp, p.
           Use meta data header to decide which fields are read/written.
-
+ v2.0.1 - For relocation code runs on Cray without P, DP, and vvel, Fanglin pass the 
+          indicator "nopdpvv" to function 'nemsio_gfsgrd_open' above previous version.
 
 Implementation Instructions on WCOSS-Phase 1/2
 ----------------------------------------------
