@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code
+END
+machine_8.f
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/machine_8.f
+END
+gfsio_rst.f
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/gfsio_rst.f
+END
+funcphys.f
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/funcphys.f
+END
+nstio_module.f
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/nstio_module.f
+END
+makefile.sh
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/makefile.sh
+END
+nrlmsise00_sub.f
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/nrlmsise00_sub.f
+END
+physcons.f
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/physcons.f
+END
+global_chgres
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/global_chgres
+END
+vintg_idea.f
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/vintg_idea.f
+END
+chgres.f
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/chgres.f
+END
+nsst_chgres.f
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/nsst_chgres.f
+END
+surface_chgres.f
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/surface_chgres.f
+END
+num_parthds.f
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/num_parthds.f
+END
+sfcsub.f
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/sfcsub.f
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/projects/!svn/ver/98638/nceplibs/nemsiogfs/tags/v2.2.0/unit_test/code/Makefile
+END

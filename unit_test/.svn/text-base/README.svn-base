@@ -1,0 +1,42 @@
+Unit Test for NEMSIOGFS library
+#Abstract: The nemsiogfs library is such a specific library to describe all GFS
+#   variables in nemsio format. The unit test of it requires read and write
+#   all of these variables. Therefore, we simply the global chgres code into
+#   a test code to fullfill this process.
+#   This script changes the resolution of the GFS files. We provide the T126
+#   low resolution data as the testdataset. It changes to the high resolution
+#   T574 inorder to test its function for use in high resolution.
+#   *****Notice*****
+#   The compile of the code need support of other libraries, since the test of
+#   all GFS variables is a systematic work. The setting of these library (nemsio,
+#   BACIO, sigio etc...) may varies based on specific machine. Setting of variables 
+#   Also affect the results. 
+
+Unit test directory contains separate tests with associtaed parts
+./build_code.sh
+./modulefiles/gsm_v14.1.0.cray
+              gsm_v14.1.0.theia
+              gsm_v14.1.0.wcoss
+./code
+./code.sh
+./test.sh
+./run_cray.sh
+./testdataset
+Testing nesmiogfs v2.2.0 builds:
+To test your builds by available unit tests:
+1. cd ../unit_test/
+  ./build_code.sh cray       :for cray machine
+  ./build_code.sh wcoss      :for phase 1&2
+  ./build_code.sh theia      :for theia
+===   This is to compile the test code.
+
+2. cd ../unit_test/
+   ./test.sh        :for WCOSS and Theia
+===   This to run the test
+   cat ./run_cray.sh  | bsub         :for cray 
+3. The result will be shown as
+gfsout:  the nemsio format data at rsolution of T574
+The support data: e.g. orography etc on machine may also affect the result. Following just use the common setting based on available datasets on each machine.
+The size is 1544778184 bits for WCOSS and Theia based on idrt=0, bin=4 (default). export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=0,OUTTYP=1,GRDFMT='bin4'"
+The size is 1035161800 bits for CRAY based on idrt=4, based on 'export CHGRESVARS=${CHGRESVARS}'. 
+You can also check the running record to see the process.
