@@ -40,11 +40,14 @@ module nemsio_gfs
 !
   public intkind,realkind,dblekind,charkind8,charkind
   public nemsio_gfsgrd_open,   nemsio_gfssfc_open,     &
+         nemsio_gfsflx_open,                           &
          nemsio_gfs_wrtgrd,    nemsio_gfs_wrtsfc,      &
          nemsio_gfs_rdgrd,     nemsio_gfs_rdsfc,       &
+         nemsio_gfs_wrtflx,    nemsio_gfs_rdflx,       &
          nemsio_gfs_axheadv,                           &
          nemsio_gfs_algrd,     nemsio_gfs_axgrd,       &
-         nemsio_gfs_alsfc,     nemsio_gfs_axsfc
+         nemsio_gfs_alsfc,     nemsio_gfs_axsfc,       &
+         nemsio_gfs_alflx,  nemsio_gfs_axflx
  
 !
   type,public :: nemsio_head
@@ -214,6 +217,7 @@ module nemsio_gfs
     real(realkind),allocatable :: slope(:,:)
     real(realkind),allocatable :: snoalb(:,:)
     real(realkind),allocatable :: orog(:,:)
+
   end type nemsio_data
 
   type,public:: nemsio_dbta
@@ -268,6 +272,170 @@ module nemsio_gfs
     real(dblekind),allocatable :: orog(:,:)
 !
   end type nemsio_dbta
+!-------------------------
+!***  REAL 2-D ARRAYS  flx***
+  type,public:: nemsio_flx
+!      CHARACTER(16),DIMENSION(3,150),TARGET :: PHY_INT_STATE_2D_R_FLX
+    real(realkind),allocatable :: uflx_ave(:,:)
+    real(realkind),allocatable :: vflx_ave(:,:)
+    real(realkind),allocatable :: shtfl_ave(:,:)
+    real(realkind),allocatable :: lhtfl_ave(:,:)
+    real(realkind),allocatable :: tmp_ave(:,:)
+    real(realkind),allocatable :: soilw(:,:)
+    real(realkind),allocatable :: ulwrf_ave(:,:)
+    real(realkind),allocatable :: uswrf_ave(:,:)
+    real(realkind),allocatable :: dswrf_ave(:,:)
+    real(realkind),allocatable :: tcdc_ave(:,:)
+    real(realkind),allocatable :: pres_ave(:,:)
+    real(realkind),allocatable :: dlwrf_ave(:,:)
+    real(realkind),allocatable :: duvb_ave(:,:)
+    real(realkind),allocatable :: cduvb_ave(:,:)
+    real(realkind),allocatable :: vbdsf_ave(:,:)
+    real(realkind),allocatable :: vddsf_ave(:,:)
+    real(realkind),allocatable :: nbdsf_ave(:,:)
+    real(realkind),allocatable :: nddsf_ave(:,:)
+    real(realkind),allocatable :: csulf(:,:)
+    real(realkind),allocatable :: csusf(:,:)
+    real(realkind),allocatable :: csdlf(:,:)
+    real(realkind),allocatable :: csdsf(:,:)
+    real(realkind),allocatable :: albdo_ave(:,:)
+    real(realkind),allocatable :: prate_ave(:,:)
+    real(realkind),allocatable :: cprat_ave(:,:)
+    real(realkind),allocatable :: gflux_ave(:,:)
+    real(realkind),allocatable :: land(:,:)
+    real(realkind),allocatable :: icec(:,:)
+    real(realkind),allocatable :: ugrd(:,:)
+    real(realkind),allocatable :: vgrd(:,:)
+    real(realkind),allocatable :: spfh(:,:)
+    real(realkind),allocatable :: pres(:,:)
+    real(realkind),allocatable :: tmax_max(:,:)
+    real(realkind),allocatable :: tmin_min(:,:)
+    real(realkind),allocatable :: spfhmax_max(:,:)
+    real(realkind),allocatable :: spfhmin_min(:,:)
+    real(realkind),allocatable :: watr_acc(:,:)
+    real(realkind),allocatable :: pevpr_ave(:,:)
+    real(realkind),allocatable :: cwork_ave(:,:)
+    real(realkind),allocatable :: ugwd_ave(:,:)
+    real(realkind),allocatable :: vgwd_ave(:,:)
+    real(realkind),allocatable :: hpbl(:,:)
+    real(realkind),allocatable :: pwat(:,:)
+    real(realkind),allocatable :: tcdc(:,:)
+    real(realkind),allocatable :: icetk(:,:)
+    real(realkind),allocatable :: soill(:,:)
+    real(realkind),allocatable :: snod(:,:)
+    real(realkind),allocatable :: cnwat(:,:)
+    real(realkind),allocatable :: sfcr(:,:)
+    real(realkind),allocatable :: veg(:,:)
+    real(realkind),allocatable :: vgtyp(:,:)
+    real(realkind),allocatable :: sotyp(:,:)
+    real(realkind),allocatable :: sltyp(:,:)
+    real(realkind),allocatable :: fricv(:,:)
+    real(realkind),allocatable :: hgt(:,:)
+    real(realkind),allocatable :: crain(:,:)
+    real(realkind),allocatable :: sfexc(:,:)
+    real(realkind),allocatable :: acond(:,:)
+    real(realkind),allocatable :: pevpr(:,:)
+    real(realkind),allocatable :: dlwrf(:,:)
+    real(realkind),allocatable :: ulwrf(:,:)
+    real(realkind),allocatable :: uswrf(:,:)
+    real(realkind),allocatable :: dswrf(:,:)
+    real(realkind),allocatable :: shtfl(:,:)
+    real(realkind),allocatable :: lhtfl(:,:)
+    real(realkind),allocatable :: gflux(:,:)
+    real(realkind),allocatable :: ssrun_acc(:,:)
+    real(realkind),allocatable :: evbs_ave(:,:)
+    real(realkind),allocatable :: evcw_ave(:,:)
+    real(realkind),allocatable :: trans_ave(:,:)
+    real(realkind),allocatable :: sbsno_ave(:,:)
+    real(realkind),allocatable :: snowc_ave(:,:)
+    real(realkind),allocatable :: soilm(:,:)
+    real(realkind),allocatable :: snohf(:,:)
+    real(realkind),allocatable :: wilt(:,:)
+    real(realkind),allocatable :: fldcp(:,:)
+    real(realkind),allocatable :: sunsd_acc(:,:)
+    real(realkind),allocatable :: cpofp(:,:)
+  end type nemsio_flx
+  type,public:: nemsio_dflx
+!      CHARACTER(16),DIMENSION(3,150),TARGET :: PHY_INT_STATE_2D_R_FLX
+    real(dblekind),allocatable :: uflx_ave(:,:)
+    real(dblekind),allocatable :: vflx_ave(:,:)
+    real(dblekind),allocatable :: shtfl_ave(:,:)
+    real(dblekind),allocatable :: lhtfl_ave(:,:)
+    real(dblekind),allocatable :: tmp_ave(:,:)
+    real(dblekind),allocatable :: soilw(:,:)
+    real(dblekind),allocatable :: ulwrf_ave(:,:)
+    real(dblekind),allocatable :: uswrf_ave(:,:)
+    real(dblekind),allocatable :: dswrf_ave(:,:)
+    real(dblekind),allocatable :: tcdc_ave(:,:)
+    real(dblekind),allocatable :: pres_ave(:,:)
+    real(dblekind),allocatable :: dlwrf_ave(:,:)
+    real(dblekind),allocatable :: duvb_ave(:,:)
+    real(dblekind),allocatable :: cduvb_ave(:,:)
+    real(dblekind),allocatable :: vbdsf_ave(:,:)
+    real(dblekind),allocatable :: vddsf_ave(:,:)
+    real(dblekind),allocatable :: nbdsf_ave(:,:)
+    real(dblekind),allocatable :: nddsf_ave(:,:)
+    real(dblekind),allocatable :: csulf(:,:)
+    real(dblekind),allocatable :: csusf(:,:)
+    real(dblekind),allocatable :: csdlf(:,:)
+    real(dblekind),allocatable :: csdsf(:,:)
+    real(dblekind),allocatable :: albdo_ave(:,:)
+    real(dblekind),allocatable :: prate_ave(:,:)
+    real(dblekind),allocatable :: cprat_ave(:,:)
+    real(dblekind),allocatable :: gflux_ave(:,:)
+    real(dblekind),allocatable :: land(:,:)
+    real(dblekind),allocatable :: icec(:,:)
+    real(dblekind),allocatable :: ugrd(:,:)
+    real(dblekind),allocatable :: vgrd(:,:)
+    real(dblekind),allocatable :: spfh(:,:)
+    real(dblekind),allocatable :: pres(:,:)
+    real(dblekind),allocatable :: tmax_max(:,:)
+    real(dblekind),allocatable :: tmin_min(:,:)
+    real(dblekind),allocatable :: spfhmax_max(:,:)
+    real(dblekind),allocatable :: spfhmin_min(:,:)
+    real(dblekind),allocatable :: watr_acc(:,:)
+    real(dblekind),allocatable :: pevpr_ave(:,:)
+    real(dblekind),allocatable :: cwork_ave(:,:)
+    real(dblekind),allocatable :: ugwd_ave(:,:)
+    real(dblekind),allocatable :: vgwd_ave(:,:)
+    real(dblekind),allocatable :: hpbl(:,:)
+    real(dblekind),allocatable :: pwat(:,:)
+    real(dblekind),allocatable :: tcdc(:,:)
+    real(dblekind),allocatable :: icetk(:,:)
+    real(dblekind),allocatable :: soill(:,:)
+    real(dblekind),allocatable :: snod(:,:)
+    real(dblekind),allocatable :: cnwat(:,:)
+    real(dblekind),allocatable :: sfcr(:,:)
+    real(dblekind),allocatable :: veg(:,:)
+    real(dblekind),allocatable :: vgtyp(:,:)
+    real(dblekind),allocatable :: sotyp(:,:)
+    real(dblekind),allocatable :: sltyp(:,:)
+    real(dblekind),allocatable :: fricv(:,:)
+    real(dblekind),allocatable :: hgt(:,:)
+    real(dblekind),allocatable :: crain(:,:)
+    real(dblekind),allocatable :: sfexc(:,:)
+    real(dblekind),allocatable :: acond(:,:)
+    real(dblekind),allocatable :: pevpr(:,:)
+    real(dblekind),allocatable :: dlwrf(:,:)
+    real(dblekind),allocatable :: ulwrf(:,:)
+    real(dblekind),allocatable :: uswrf(:,:)
+    real(dblekind),allocatable :: dswrf(:,:)
+    real(dblekind),allocatable :: shtfl(:,:)
+    real(dblekind),allocatable :: lhtfl(:,:)
+    real(dblekind),allocatable :: gflux(:,:)
+    real(dblekind),allocatable :: ssrun_acc(:,:)
+    real(dblekind),allocatable :: evbs_ave(:,:)
+    real(dblekind),allocatable :: evcw_ave(:,:)
+    real(dblekind),allocatable :: trans_ave(:,:)
+    real(dblekind),allocatable :: sbsno_ave(:,:)
+    real(dblekind),allocatable :: snowc_ave(:,:)
+    real(dblekind),allocatable :: soilm(:,:)
+    real(dblekind),allocatable :: snohf(:,:)
+    real(dblekind),allocatable :: wilt(:,:)
+    real(dblekind),allocatable :: fldcp(:,:)
+    real(dblekind),allocatable :: sunsd_acc(:,:)
+    real(dblekind),allocatable :: cpofp(:,:)
+  end type nemsio_dflx
 !
   interface nemsio_gfs_algrd
     module procedure nemsio_gfs_aldbta_grd
@@ -285,20 +453,40 @@ module nemsio_gfs
     module procedure nemsio_gfs_aldata_sfc
   end interface nemsio_gfs_alsfc
 !
+  interface nemsio_gfs_alflx
+    module procedure nemsio_gfs_aldbta_flx
+    module procedure nemsio_gfs_aldata_flx
+  end interface nemsio_gfs_alflx
+!
   interface nemsio_gfs_axsfc
     module procedure nemsio_gfs_axdbta_sfc
     module procedure nemsio_gfs_axdata_sfc
   end interface nemsio_gfs_axsfc
+!
+  interface nemsio_gfs_axflx
+    module procedure nemsio_gfs_axdbta_flx
+    module procedure nemsio_gfs_axdata_flx
+  end interface nemsio_gfs_axflx
 !
   interface nemsio_gfs_rdsfc
     module procedure nemsio_gfs_rdsfc4
     module procedure nemsio_gfs_rdsfc8
   end interface nemsio_gfs_rdsfc
 !
+  interface nemsio_gfs_rdflx
+    module procedure nemsio_gfs_rdflx4
+    module procedure nemsio_gfs_rdflx8
+  end interface nemsio_gfs_rdflx
+!
   interface nemsio_gfs_wrtsfc
     module procedure nemsio_gfs_wrtsfc4
     module procedure nemsio_gfs_wrtsfc8
   end interface nemsio_gfs_wrtsfc
+!
+  interface nemsio_gfs_wrtflx
+    module procedure nemsio_gfs_wrtflx4
+    module procedure nemsio_gfs_wrtflx8
+  end interface nemsio_gfs_wrtflx
 !
   interface nemsio_gfs_rdgrd
     module procedure nemsio_gfs_rdgrd4
@@ -680,6 +868,146 @@ contains
 !
   end subroutine nemsio_gfssfc_open
 !
+!-----------------------------------------------------------------------
+  subroutine nemsio_gfsflx_open(gfile, filename, gaction, gfshead, gfsheadv, iret)
+!-----------------------------------------------------------------------
+!
+    use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,   &
+                              nemsio_open,nemsio_getheadvar
+!
+    implicit none
+!
+    type(nemsio_gfile),intent(inout)   :: gfile
+    character*(*),intent(in)           :: filename
+    character*(*),intent(in)           :: gaction
+    type(nemsio_head),intent(inout)    :: gfshead
+    type(nemsio_headv),intent(inout)   :: gfsheadv
+    integer,intent(out)                :: iret
+    integer ios,ios1,nrec
+!
+    if(trim(gaction)=="read" .or. trim(gaction)=="READ")then
+      call nemsio_open(gfile,trim(filename),'read',ios)
+      if(ios==0) then
+
+       CALL NEMSIO_GETFILEHEAD(gfile                                      &
+     &,                        MODELNAME=gfshead%MODELNAME                &
+     &,                        NMETA=gfshead%NMETA                        &
+     &,                        IDATE=gfshead%IDATE                        &
+     &,                        NFHOUR=gfshead%NFHOUR                      &
+     &,                        NFMINUTE=gfshead%NFMINUTE                  &
+     &,                        NFSECONDN=gfshead%NFSECONDN                &
+     &,                        NFSECONDD=gfshead%NFSECONDD                &
+     &,                        VERSION=gfshead%VERSION                    &
+     &,                        nrec=gfshead%nrec                          &
+     &,                        DIMX=gfshead%dimx                          &
+     &,                        DIMY=gfshead%dimy                          &
+     &,                        DIMZ=gfshead%DIMZ                          &
+     &,                        NSOIL=gfshead%NSOIL                        &
+     &,                        IDRT=gfshead%IDRT                          &
+     &,                        IDVM=gfshead%IDVM                          &
+     &,                        NCLDT=gfshead%NCLDT                        &
+     &,                        extrameta=gfshead%extrameta                &
+     &,                        nmetavari=gfshead%nmetavari                &
+     &,                        nmetavarr=gfshead%nmetavarr                &
+     &,                        nmetaaryi=gfshead%nmetaaryi                &
+     &,                        nmetaaryr=gfshead%nmetaaryr                &
+     &,                        IRET=ios)
+
+
+       CALL NEMSIO_GETHEADVAR(gfile,'irealf',gfshead%irealf,IRET)
+       ALLOCATE(gfsheadv%LPL((gfshead%LATB+1)/2) )
+       ALLOCATE(gfsheadv%ZSOIL(gfshead%NSOIL))
+       CALL NEMSIO_GETHEADVAR(gfile,'lpl',gfsheadv%LPL,IRET)
+       CALL NEMSIO_GETHEADVAR(gfile,'zsoil',gfsheadv%ZSOIL,IRET)
+       CALL NEMSIO_GETHEADVAR(gfile,'IVSSFC',gfshead%IVS,IRET)
+       CALL NEMSIO_GETHEADVAR(gfile,'fhour',gfshead%fhour,IRET)
+!
+       ALLOCATE(gfsheadv%RECNAME(gfshead%nrec))
+       ALLOCATE(gfsheadv%RECLEVTYP(gfshead%nrec))
+       ALLOCATE(gfsheadv%RECLEV(gfshead%nrec))
+       ALLOCATE(gfsheadv%variname(gfshead%nmetavari))
+       ALLOCATE(gfsheadv%varrname(gfshead%nmetavarr))
+       ALLOCATE(gfsheadv%varival(gfshead%nmetavari))
+       ALLOCATE(gfsheadv%varrval(gfshead%nmetavarr))
+       ALLOCATE(gfsheadv%aryiname(gfshead%nmetaaryi))
+       ALLOCATE(gfsheadv%aryrname(gfshead%nmetaaryr))
+       ALLOCATE(gfsheadv%aryilen(gfshead%nmetaaryi))
+       ALLOCATE(gfsheadv%aryrlen(gfshead%nmetaaryr))
+!
+!
+        CALL NEMSIO_GETFILEHEAD(gfile                                      &
+     &,                         RECNAME=gfsheadv%RECNAME                   &
+     &,                         RECLEVTYP=gfsheadv%RECLEVTYP               &
+     &,                         RECLEV=gfsheadv%RECLEV                     &
+     &,                         variname=gfsheadv%variname                 &
+     &,                         varrname=gfsheadv%varrname                 &
+     &,                         varival=gfsheadv%varival                   &
+     &,                         varrval=gfsheadv%varrval                   &
+     &,                         aryiname=gfsheadv%aryiname                 &
+     &,                         aryrname=gfsheadv%aryrname                 &
+     &,                         aryilen=gfsheadv%aryilen                   &
+     &,                         aryrlen=gfsheadv%aryrlen                   &
+     &,                         IRET=ios1)
+        if(gfshead%nmetaaryi > 0) then
+          ALLOCATE(gfsheadv%aryival(maxval(gfsheadv%aryilen),      &
+     &             gfshead%nmetaaryi))
+          CALL NEMSIO_GETFILEHEAD(gfile,aryival=gfsheadv%aryival,iret=iret)
+        endif
+        if(gfshead%nmetaaryr > 0) then
+          ALLOCATE(gfsheadv%aryrval(maxval(gfsheadv%aryrlen),      &
+     &             gfshead%nmetaaryr))
+          CALL NEMSIO_GETFILEHEAD(gfile,aryrval=gfsheadv%aryrval,iret=iret)
+        endif
+
+       endif
+!
+      else
+!for write
+        CALL NEMSIO_OPEN(gfile,trim(filename),'write'                        &
+     &,                  MODELNAME="GFS"                                     &
+     &,                  GDATATYPE="bin4"                                    &
+     &,                  NFHOUR=gfshead%NFHOUR                               &
+     &,                  NFMINUTE=gfshead%NFMINUTE                           &
+     &,                  NFSECONDN=gfshead%NFSECONDN                         &
+     &,                  NFSECONDD=gfshead%NFSECONDD                         &
+     &,                  IDATE=gfshead%IDATE                                 &
+     &,                  nrec=gfshead%nrec                                   &
+     &,                  DIMX=gfshead%DIMX                                   &
+     &,                  DIMY=gfshead%DIMY                                   &
+     &,                  DIMZ=gfshead%DIMZ                                   &
+     &,                  NSOIL=gfshead%NSOIL                                 &
+     &,                  NMETA=gfshead%NMETA                                 &
+     &,                  IDRT=gfshead%IDRT                                   &
+     &,                  IDVM=gfshead%IDVM                                   &
+     &,                  NCLDT=gfshead%NCLDT                                 &
+     &,                  RECNAME=gfsheadv%RECNAME                            &
+     &,                  RECLEVTYP=gfsheadv%RECLEVTYP                        &
+     &,                  RECLEV=gfsheadv%RECLEV                              &
+     &,                  EXTRAMETA=gfshead%EXTRAMETA                         &
+     &,                  NMETAVARI=gfshead%NMETAVARI                         &
+     &,                  NMETAVARR=gfshead%NMETAVARR                         &
+     &,                  NMETAARYI=gfshead%NMETAARYI                         &
+     &,                  NMETAARYR=gfshead%NMETAARYR                         &
+     &,                  VARINAME=gfsheadv%VARINAME                          &
+     &,                  VARIVAL=gfsheadv%VARIVAL                            &
+     &,                  VARRNAME=gfsheadv%VARRNAME                          &
+     &,                  VARRVAL=gfsheadv%VARRVAL                            &
+     &,                  ARYINAME=gfsheadv%ARYINAME                          &
+     &,                  ARYILEN=gfsheadv%ARYILEN                            &
+     &,                  ARYIVAL=gfsheadv%ARYIVAL                            &
+     &,                  ARYRNAME=gfsheadv%ARYRNAME                          &
+     &,                  ARYRLEN=gfsheadv%ARYRLEN                            &
+     &,                  ARYRVAL=gfsheadv%ARYRVAL                            &
+     &,                  IRET=ios)
+        IF(ios.NE.0) THEN
+          PRINT*, ' ERROR AT NEMSIO_OPEN chgres.out.sfn '
+          CALL ERREXIT(4)
+        ENDIF
+
+       endif
+!
+  end subroutine nemsio_gfsflx_open
+
 !
 !-----------------------------------------------------------------------   
   subroutine nemsio_gfs_aldbta_sfc(im,jm,lsoil,nemsiodbta)
@@ -732,7 +1060,97 @@ contains
     allocate(nemsiodbta%orog(im,jm))
 !
   end subroutine nemsio_gfs_aldbta_sfc
+!-----------------------------------------------------------------------
+  subroutine nemsio_gfs_aldbta_flx(im,jm,nemsiodflx)
+!-----------------------------------------------------------------------
 !
+    implicit none
+!
+    integer,          intent(in)    :: im,jm
+    type(nemsio_dflx),intent(inout) :: nemsiodflx
+!
+!---allocate nemsio_dbdata with dimension (im,jm)
+!
+    allocate(nemsiodflx%uflx_ave(im,jm))
+    allocate(nemsiodflx%vflx_ave(im,jm))
+    allocate(nemsiodflx%shtfl_ave(im,jm))
+    allocate(nemsiodflx%lhtfl_ave(im,jm))
+    allocate(nemsiodflx%tmp_ave(im,jm))
+    allocate(nemsiodflx%soilw(im,jm))
+    allocate(nemsiodflx%ulwrf_ave(im,jm))
+    allocate(nemsiodflx%uswrf_ave(im,jm))
+    allocate(nemsiodflx%dswrf_ave(im,jm))
+    allocate(nemsiodflx%tcdc_ave(im,jm))
+    allocate(nemsiodflx%pres_ave(im,jm))
+    allocate(nemsiodflx%dlwrf_ave(im,jm))
+    allocate(nemsiodflx%duvb_ave(im,jm))
+    allocate(nemsiodflx%cduvb_ave(im,jm))
+    allocate(nemsiodflx%vbdsf_ave(im,jm))
+    allocate(nemsiodflx%vddsf_ave(im,jm))
+    allocate(nemsiodflx%nbdsf_ave(im,jm))
+    allocate(nemsiodflx%nddsf_ave(im,jm))
+    allocate(nemsiodflx%csulf(im,jm))
+    allocate(nemsiodflx%csusf(im,jm))
+    allocate(nemsiodflx%csdlf(im,jm))
+    allocate(nemsiodflx%csdsf(im,jm))
+    allocate(nemsiodflx%albdo_ave(im,jm))
+    allocate(nemsiodflx%prate_ave(im,jm))
+    allocate(nemsiodflx%cprat_ave(im,jm))
+    allocate(nemsiodflx%gflux_ave(im,jm))
+    allocate(nemsiodflx%land(im,jm))
+    allocate(nemsiodflx%icec(im,jm))
+    allocate(nemsiodflx%ugrd(im,jm))
+    allocate(nemsiodflx%vgrd(im,jm))
+    allocate(nemsiodflx%spfh(im,jm))
+    allocate(nemsiodflx%pres(im,jm))
+    allocate(nemsiodflx%tmax_max(im,jm))
+    allocate(nemsiodflx%tmin_min(im,jm))
+    allocate(nemsiodflx%spfhmax_max(im,jm))
+    allocate(nemsiodflx%spfhmin_min(im,jm))
+    allocate(nemsiodflx%watr_acc(im,jm))
+    allocate(nemsiodflx%pevpr_ave(im,jm))
+    allocate(nemsiodflx%cwork_ave(im,jm))
+    allocate(nemsiodflx%ugwd_ave(im,jm))
+    allocate(nemsiodflx%vgwd_ave(im,jm))
+    allocate(nemsiodflx%hpbl(im,jm))
+    allocate(nemsiodflx%pwat(im,jm))
+    allocate(nemsiodflx%tcdc(im,jm))
+    allocate(nemsiodflx%icetk(im,jm))
+    allocate(nemsiodflx%soill(im,jm))
+    allocate(nemsiodflx%snod(im,jm))
+    allocate(nemsiodflx%cnwat(im,jm))
+    allocate(nemsiodflx%sfcr(im,jm))
+    allocate(nemsiodflx%veg(im,jm))
+    allocate(nemsiodflx%vgtyp(im,jm))
+    allocate(nemsiodflx%sotyp(im,jm))
+    allocate(nemsiodflx%sltyp(im,jm))
+    allocate(nemsiodflx%fricv(im,jm))
+    allocate(nemsiodflx%hgt(im,jm))
+    allocate(nemsiodflx%crain(im,jm))
+    allocate(nemsiodflx%sfexc(im,jm))
+    allocate(nemsiodflx%acond(im,jm))
+    allocate(nemsiodflx%pevpr(im,jm))
+    allocate(nemsiodflx%dlwrf(im,jm))
+    allocate(nemsiodflx%ulwrf(im,jm))
+    allocate(nemsiodflx%uswrf(im,jm))
+    allocate(nemsiodflx%dswrf(im,jm))
+    allocate(nemsiodflx%shtfl(im,jm))
+    allocate(nemsiodflx%lhtfl(im,jm))
+    allocate(nemsiodflx%gflux(im,jm))
+    allocate(nemsiodflx%ssrun_acc(im,jm))
+    allocate(nemsiodflx%evbs_ave(im,jm))
+    allocate(nemsiodflx%evcw_ave(im,jm))
+    allocate(nemsiodflx%trans_ave(im,jm))
+    allocate(nemsiodflx%sbsno_ave(im,jm))
+    allocate(nemsiodflx%snowc_ave(im,jm))
+    allocate(nemsiodflx%soilm(im,jm))
+    allocate(nemsiodflx%snohf(im,jm))
+    allocate(nemsiodflx%wilt(im,jm))
+    allocate(nemsiodflx%fldcp(im,jm))
+    allocate(nemsiodflx%sunsd_acc(im,jm))
+    allocate(nemsiodflx%cpofp(im,jm))
+!
+  end subroutine nemsio_gfs_aldbta_flx
 !-----------------------------------------------------------------------   
   subroutine nemsio_gfs_aldata_sfc(im,jm,lsoil,nemsiodata)
 !-----------------------------------------------------------------------   
@@ -784,7 +1202,96 @@ contains
     allocate(nemsiodata%orog(im,jm))
 
   end subroutine nemsio_gfs_aldata_sfc
+!-----------------------------------------------------------------------
+  subroutine nemsio_gfs_aldata_flx(im,jm,nemsioflx)
+!-----------------------------------------------------------------------
 !
+    implicit none
+!
+    integer,          intent(in)    :: im,jm
+    type(nemsio_flx),intent(inout) :: nemsioflx
+!
+!---allocate nemsio_data with dimension (im,jm)
+!
+    allocate(nemsioflx%uflx_ave(im,jm))
+    allocate(nemsioflx%vflx_ave(im,jm))
+    allocate(nemsioflx%shtfl_ave(im,jm))
+    allocate(nemsioflx%lhtfl_ave(im,jm))
+    allocate(nemsioflx%tmp_ave(im,jm))
+    allocate(nemsioflx%soilw(im,jm))
+    allocate(nemsioflx%ulwrf_ave(im,jm))
+    allocate(nemsioflx%uswrf_ave(im,jm))
+    allocate(nemsioflx%dswrf_ave(im,jm))
+    allocate(nemsioflx%tcdc_ave(im,jm))
+    allocate(nemsioflx%pres_ave(im,jm))
+    allocate(nemsioflx%dlwrf_ave(im,jm))
+    allocate(nemsioflx%duvb_ave(im,jm))
+    allocate(nemsioflx%cduvb_ave(im,jm))
+    allocate(nemsioflx%vbdsf_ave(im,jm))
+    allocate(nemsioflx%vddsf_ave(im,jm))
+    allocate(nemsioflx%nbdsf_ave(im,jm))
+    allocate(nemsioflx%nddsf_ave(im,jm))
+    allocate(nemsioflx%csulf(im,jm))
+    allocate(nemsioflx%csusf(im,jm))
+    allocate(nemsioflx%csdlf(im,jm))
+    allocate(nemsioflx%csdsf(im,jm))
+    allocate(nemsioflx%albdo_ave(im,jm))
+    allocate(nemsioflx%prate_ave(im,jm))
+    allocate(nemsioflx%cprat_ave(im,jm))
+    allocate(nemsioflx%gflux_ave(im,jm))
+    allocate(nemsioflx%land(im,jm))
+    allocate(nemsioflx%icec(im,jm))
+    allocate(nemsioflx%ugrd(im,jm))
+    allocate(nemsioflx%vgrd(im,jm))
+    allocate(nemsioflx%spfh(im,jm))
+    allocate(nemsioflx%pres(im,jm))
+    allocate(nemsioflx%tmax_max(im,jm))
+    allocate(nemsioflx%tmin_min(im,jm))
+    allocate(nemsioflx%spfhmax_max(im,jm))
+    allocate(nemsioflx%spfhmin_min(im,jm))
+    allocate(nemsioflx%watr_acc(im,jm))
+    allocate(nemsioflx%pevpr_ave(im,jm))
+    allocate(nemsioflx%cwork_ave(im,jm))
+    allocate(nemsioflx%ugwd_ave(im,jm))
+    allocate(nemsioflx%vgwd_ave(im,jm))
+    allocate(nemsioflx%hpbl(im,jm))
+    allocate(nemsioflx%pwat(im,jm))
+    allocate(nemsioflx%tcdc(im,jm))
+    allocate(nemsioflx%icetk(im,jm))
+    allocate(nemsioflx%soill(im,jm))
+    allocate(nemsioflx%snod(im,jm))
+    allocate(nemsioflx%cnwat(im,jm))
+    allocate(nemsioflx%sfcr(im,jm))
+    allocate(nemsioflx%veg(im,jm))
+    allocate(nemsioflx%vgtyp(im,jm))
+    allocate(nemsioflx%sotyp(im,jm))
+    allocate(nemsioflx%sltyp(im,jm))
+    allocate(nemsioflx%fricv(im,jm))
+    allocate(nemsioflx%hgt(im,jm))
+    allocate(nemsioflx%crain(im,jm))
+    allocate(nemsioflx%sfexc(im,jm))
+    allocate(nemsioflx%acond(im,jm))
+    allocate(nemsioflx%pevpr(im,jm))
+    allocate(nemsioflx%dlwrf(im,jm))
+    allocate(nemsioflx%ulwrf(im,jm))
+    allocate(nemsioflx%uswrf(im,jm))
+    allocate(nemsioflx%dswrf(im,jm))
+    allocate(nemsioflx%shtfl(im,jm))
+    allocate(nemsioflx%lhtfl(im,jm))
+    allocate(nemsioflx%gflux(im,jm))
+    allocate(nemsioflx%ssrun_acc(im,jm))
+    allocate(nemsioflx%evbs_ave(im,jm))
+    allocate(nemsioflx%evcw_ave(im,jm))
+    allocate(nemsioflx%trans_ave(im,jm))
+    allocate(nemsioflx%sbsno_ave(im,jm))
+    allocate(nemsioflx%snowc_ave(im,jm))
+    allocate(nemsioflx%soilm(im,jm))
+    allocate(nemsioflx%snohf(im,jm))
+    allocate(nemsioflx%wilt(im,jm))
+    allocate(nemsioflx%fldcp(im,jm))
+    allocate(nemsioflx%sunsd_acc(im,jm))
+    allocate(nemsioflx%cpofp(im,jm))
+  end subroutine nemsio_gfs_aldata_flx
 !
 !-----------------------------------------------------------------------   
   subroutine nemsio_gfs_axdbta_sfc(nemsiodbta)
@@ -837,6 +1344,96 @@ contains
 
   end subroutine nemsio_gfs_axdbta_sfc
 
+!-----------------------------------------------------------------------
+  subroutine nemsio_gfs_axdbta_flx(nemsiodflx)
+!-----------------------------------------------------------------------
+!
+    implicit none
+!
+    type(nemsio_dflx),intent(inout)  :: nemsiodflx
+!
+!---allocate nemsio_dbdata with dimension (im,jm)
+!
+    deallocate(nemsiodflx%uflx_ave)
+    deallocate(nemsiodflx%vflx_ave)
+    deallocate(nemsiodflx%shtfl_ave)
+    deallocate(nemsiodflx%lhtfl_ave)
+    deallocate(nemsiodflx%tmp_ave)
+    deallocate(nemsiodflx%soilw)
+    deallocate(nemsiodflx%ulwrf_ave)
+    deallocate(nemsiodflx%uswrf_ave)
+    deallocate(nemsiodflx%dswrf_ave)
+    deallocate(nemsiodflx%tcdc_ave)
+    deallocate(nemsiodflx%pres_ave)
+    deallocate(nemsiodflx%dlwrf_ave)
+    deallocate(nemsiodflx%duvb_ave)
+    deallocate(nemsiodflx%cduvb_ave)
+    deallocate(nemsiodflx%vbdsf_ave)
+    deallocate(nemsiodflx%vddsf_ave)
+    deallocate(nemsiodflx%nbdsf_ave)
+    deallocate(nemsiodflx%nddsf_ave)
+    deallocate(nemsiodflx%csulf)
+    deallocate(nemsiodflx%csusf)
+    deallocate(nemsiodflx%csdlf)
+    deallocate(nemsiodflx%csdsf)
+    deallocate(nemsiodflx%albdo_ave)
+    deallocate(nemsiodflx%prate_ave)
+    deallocate(nemsiodflx%cprat_ave)
+    deallocate(nemsiodflx%gflux_ave)
+    deallocate(nemsiodflx%land)
+    deallocate(nemsiodflx%icec)
+    deallocate(nemsiodflx%ugrd)
+    deallocate(nemsiodflx%vgrd)
+    deallocate(nemsiodflx%spfh)
+    deallocate(nemsiodflx%pres)
+    deallocate(nemsiodflx%tmax_max)
+    deallocate(nemsiodflx%tmin_min)
+    deallocate(nemsiodflx%spfhmax_max)
+    deallocate(nemsiodflx%spfhmin_min)
+    deallocate(nemsiodflx%watr_acc)
+    deallocate(nemsiodflx%pevpr_ave)
+    deallocate(nemsiodflx%cwork_ave)
+    deallocate(nemsiodflx%ugwd_ave)
+    deallocate(nemsiodflx%vgwd_ave)
+    deallocate(nemsiodflx%hpbl)
+    deallocate(nemsiodflx%pwat)
+    deallocate(nemsiodflx%tcdc)
+    deallocate(nemsiodflx%icetk)
+    deallocate(nemsiodflx%soill)
+    deallocate(nemsiodflx%snod)
+    deallocate(nemsiodflx%cnwat)
+    deallocate(nemsiodflx%sfcr)
+    deallocate(nemsiodflx%veg)
+    deallocate(nemsiodflx%vgtyp)
+    deallocate(nemsiodflx%sotyp)
+    deallocate(nemsiodflx%sltyp)
+    deallocate(nemsiodflx%fricv)
+    deallocate(nemsiodflx%hgt)
+    deallocate(nemsiodflx%crain)
+    deallocate(nemsiodflx%sfexc)
+    deallocate(nemsiodflx%acond)
+    deallocate(nemsiodflx%pevpr)
+    deallocate(nemsiodflx%dlwrf)
+    deallocate(nemsiodflx%ulwrf)
+    deallocate(nemsiodflx%uswrf)
+    deallocate(nemsiodflx%dswrf)
+    deallocate(nemsiodflx%shtfl)
+    deallocate(nemsiodflx%lhtfl)
+    deallocate(nemsiodflx%gflux)
+    deallocate(nemsiodflx%ssrun_acc)
+    deallocate(nemsiodflx%evbs_ave)
+    deallocate(nemsiodflx%evcw_ave)
+    deallocate(nemsiodflx%trans_ave)
+    deallocate(nemsiodflx%sbsno_ave)
+    deallocate(nemsiodflx%snowc_ave)
+    deallocate(nemsiodflx%soilm)
+    deallocate(nemsiodflx%snohf)
+    deallocate(nemsiodflx%wilt)
+    deallocate(nemsiodflx%fldcp)
+    deallocate(nemsiodflx%sunsd_acc)
+    deallocate(nemsiodflx%cpofp)
+
+  end subroutine nemsio_gfs_axdbta_flx
 !-----------------------------------------------------------------------   
   subroutine nemsio_gfs_axdata_sfc(nemsiodata)
 !-----------------------------------------------------------------------   
@@ -888,6 +1485,96 @@ contains
 
   end subroutine nemsio_gfs_axdata_sfc
 !
+!-----------------------------------------------------------------------
+  subroutine nemsio_gfs_axdata_flx(nemsioflx)
+!-----------------------------------------------------------------------
+!
+    implicit none
+!
+    type(nemsio_flx),intent(inout)  :: nemsioflx
+!
+!---allocate nemsio_dbdata with dimension (im,jm)
+!
+    deallocate(nemsioflx%uflx_ave)
+    deallocate(nemsioflx%vflx_ave)
+    deallocate(nemsioflx%shtfl_ave)
+    deallocate(nemsioflx%lhtfl_ave)
+    deallocate(nemsioflx%tmp_ave)
+    deallocate(nemsioflx%soilw)
+    deallocate(nemsioflx%ulwrf_ave)
+    deallocate(nemsioflx%uswrf_ave)
+    deallocate(nemsioflx%dswrf_ave)
+    deallocate(nemsioflx%tcdc_ave)
+    deallocate(nemsioflx%pres_ave)
+    deallocate(nemsioflx%dlwrf_ave)
+    deallocate(nemsioflx%duvb_ave)
+    deallocate(nemsioflx%cduvb_ave)
+    deallocate(nemsioflx%vbdsf_ave)
+    deallocate(nemsioflx%vddsf_ave)
+    deallocate(nemsioflx%nbdsf_ave)
+    deallocate(nemsioflx%nddsf_ave)
+    deallocate(nemsioflx%csulf)
+    deallocate(nemsioflx%csusf)
+    deallocate(nemsioflx%csdlf)
+    deallocate(nemsioflx%csdsf)
+    deallocate(nemsioflx%albdo_ave)
+    deallocate(nemsioflx%prate_ave)
+    deallocate(nemsioflx%cprat_ave)
+    deallocate(nemsioflx%gflux_ave)
+    deallocate(nemsioflx%land)
+    deallocate(nemsioflx%icec)
+    deallocate(nemsioflx%ugrd)
+    deallocate(nemsioflx%vgrd)
+    deallocate(nemsioflx%spfh)
+    deallocate(nemsioflx%pres)
+    deallocate(nemsioflx%tmax_max)
+    deallocate(nemsioflx%tmin_min)
+    deallocate(nemsioflx%spfhmax_max)
+    deallocate(nemsioflx%spfhmin_min)
+    deallocate(nemsioflx%watr_acc)
+    deallocate(nemsioflx%pevpr_ave)
+    deallocate(nemsioflx%cwork_ave)
+    deallocate(nemsioflx%ugwd_ave)
+    deallocate(nemsioflx%vgwd_ave)
+    deallocate(nemsioflx%hpbl)
+    deallocate(nemsioflx%pwat)
+    deallocate(nemsioflx%tcdc)
+    deallocate(nemsioflx%icetk)
+    deallocate(nemsioflx%soill)
+    deallocate(nemsioflx%snod)
+    deallocate(nemsioflx%cnwat)
+    deallocate(nemsioflx%sfcr)
+    deallocate(nemsioflx%veg)
+    deallocate(nemsioflx%vgtyp)
+    deallocate(nemsioflx%sotyp)
+    deallocate(nemsioflx%sltyp)
+    deallocate(nemsioflx%fricv)
+    deallocate(nemsioflx%hgt)
+    deallocate(nemsioflx%crain)
+    deallocate(nemsioflx%sfexc)
+    deallocate(nemsioflx%acond)
+    deallocate(nemsioflx%pevpr)
+    deallocate(nemsioflx%dlwrf)
+    deallocate(nemsioflx%ulwrf)
+    deallocate(nemsioflx%uswrf)
+    deallocate(nemsioflx%dswrf)
+    deallocate(nemsioflx%shtfl)
+    deallocate(nemsioflx%lhtfl)
+    deallocate(nemsioflx%gflux)
+    deallocate(nemsioflx%ssrun_acc)
+    deallocate(nemsioflx%evbs_ave)
+    deallocate(nemsioflx%evcw_ave)
+    deallocate(nemsioflx%trans_ave)
+    deallocate(nemsioflx%sbsno_ave)
+    deallocate(nemsioflx%snowc_ave)
+    deallocate(nemsioflx%soilm)
+    deallocate(nemsioflx%snohf)
+    deallocate(nemsioflx%wilt)
+    deallocate(nemsioflx%fldcp)
+    deallocate(nemsioflx%sunsd_acc)
+    deallocate(nemsioflx%cpofp)
+
+  end subroutine nemsio_gfs_axdata_flx
 !-----------------------------------------------------------------------
   subroutine nemsio_gfs_alheadv(nemsiohead,nemsioheadv)
 !-----------------------------------------------------------------------
@@ -964,6 +1651,667 @@ contains
 
   end subroutine nemsio_gfs_axheadv
 !   
+!-----------------------------------------------------------------------
+  subroutine nemsio_gfs_rdflx8(gfile,nemsiodflx,iret)
+!-----------------------------------------------------------------------
+!
+    use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,nemsio_readrecv
+    implicit none
+!
+    type(nemsio_gfile),intent(inout) :: gfile
+    type(nemsio_dflx),intent(inout)  :: nemsiodflx
+    integer, optional,intent(out)    :: iret
+!local
+    integer im,jm,l,fieldsize,ntrac,ierr
+    real(dblekind),allocatable       :: tmp(:)
+!
+!---read out data from nemsio file
+!
+    call nemsio_getfilehead(gfile,dimx=im,dimy=jm,ntrac=ntrac,iret=ierr)
+    if(ierr /= 0) then
+       if(present(iret)) iret = ierr
+       print *,'ERROR: cannot get dimension from gfile'
+       return
+    endif
+    fieldsize = im*jm
+    im = size(nemsiodflx%gflux,1)
+    jm = size(nemsiodflx%gflux,2)
+    if(im*jm/=fieldsize) then
+       print *,'ERROR: dimension not match'
+       return
+    endif
+    allocate(tmp(fieldsize))
+    if(present(iret)) iret=0
+!
+!uflx_ave
+    call nemsio_readrecv(gfile,'uflx_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%uflx_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (uflx_ave), iret=', ierr
+    endif
+!vflx_ave
+    call nemsio_readrecv(gfile,'vflx_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%vflx_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vflx_ave), iret=', ierr
+    endif
+!shtfl_ave
+    call nemsio_readrecv(gfile,'shtfl_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%shtfl_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (shtfl_ave), iret=', ierr
+    endif
+!lhtfl_ave
+    call nemsio_readrecv(gfile,'lhtfl_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%lhtfl_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (lhtfl_ave), iret=', ierr
+    endif
+!tmp_ave
+    call nemsio_readrecv(gfile,'tmp_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%tmp_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (tmp_ave), iret=', ierr
+    endif
+!soilw
+    call nemsio_readrecv(gfile,'soilw','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%soilw(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (soilw), iret=', ierr
+    endif
+!ulwrf_ave
+    call nemsio_readrecv(gfile,'ulwrf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%ulwrf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (ulwrf_ave), iret=', ierr
+    endif
+!uswrf_ave
+    call nemsio_readrecv(gfile,'uswrf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%uswrf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (uswrf_ave), iret=', ierr
+    endif
+!dswrf_ave
+    call nemsio_readrecv(gfile,'dswrf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%dswrf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (dswrf_ave), iret=', ierr
+    endif
+!tcdc_ave
+    call nemsio_readrecv(gfile,'tcdc_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%tcdc_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (tcdc_ave), iret=', ierr
+    endif
+!pres_ave
+    call nemsio_readrecv(gfile,'pres_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%pres_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (pres_ave), iret=', ierr
+    endif
+!dlwrf_ave
+    call nemsio_readrecv(gfile,'dlwrf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%dlwrf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (dlwrf_ave), iret=', ierr
+    endif
+!duvb_ave
+    call nemsio_readrecv(gfile,'duvb_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%duvb_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (duvb_ave), iret=', ierr
+    endif
+!cduvb_ave
+    call nemsio_readrecv(gfile,'cduvb_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%cduvb_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (cduvb_ave), iret=', ierr
+    endif
+!vbdsf_ave
+    call nemsio_readrecv(gfile,'vbdsf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%vbdsf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vbdsf_ave), iret=', ierr
+    endif
+!vddsf_ave
+    call nemsio_readrecv(gfile,'vddsf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%vddsf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vddsf_ave), iret=', ierr
+    endif
+!nbdsf_ave
+    call nemsio_readrecv(gfile,'nbdsf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%nbdsf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (nbdsf_ave), iret=', ierr
+    endif
+!nddsf_ave
+    call nemsio_readrecv(gfile,'nddsf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%nddsf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (nddsf_ave), iret=', ierr
+    endif
+!csulf
+    call nemsio_readrecv(gfile,'csulf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%csulf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (csulf), iret=', ierr
+    endif
+!csusf
+    call nemsio_readrecv(gfile,'csusf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%csusf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (csusf), iret=', ierr
+    endif
+!csdlf
+    call nemsio_readrecv(gfile,'csdlf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%csdlf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (csdlf), iret=', ierr
+    endif
+!csdsf
+    call nemsio_readrecv(gfile,'csdsf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%csdsf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (csdsf), iret=', ierr
+    endif
+!albdo_ave
+    call nemsio_readrecv(gfile,'albdo_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%albdo_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (albdo_ave), iret=', ierr
+    endif
+!prate_ave
+    call nemsio_readrecv(gfile,'prate_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%prate_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (prate_ave), iret=', ierr
+    endif
+!cprat_ave
+    call nemsio_readrecv(gfile,'cprat_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%cprat_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (cprat_ave), iret=', ierr
+    endif
+!gflux_ave
+    call nemsio_readrecv(gfile,'gflux_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%gflux_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (gflux_ave), iret=', ierr
+    endif
+!land
+    call nemsio_readrecv(gfile,'land','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%land(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (land), iret=', ierr
+    endif
+!icec
+    call nemsio_readrecv(gfile,'icec','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%icec(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (icec), iret=', ierr
+    endif
+!ugrd
+    call nemsio_readrecv(gfile,'ugrd','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%ugrd(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (ugrd), iret=', ierr
+    endif
+!vgrd
+    call nemsio_readrecv(gfile,'vgrd','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%vgrd(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vgrd), iret=', ierr
+    endif
+!spfh
+    call nemsio_readrecv(gfile,'spfh','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%spfh(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (spfh), iret=', ierr
+    endif
+!pres
+    call nemsio_readrecv(gfile,'pres','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%pres(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (pres), iret=', ierr
+    endif
+!tmax_max
+    call nemsio_readrecv(gfile,'tmax_max','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%tmax_max(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (tmax_max), iret=', ierr
+    endif
+!tmin_min
+    call nemsio_readrecv(gfile,'tmin_min','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%tmin_min(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (tmin_min), iret=', ierr
+    endif
+!spfhmax_max
+    call nemsio_readrecv(gfile,'spfhmax_max','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%spfhmax_max(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (spfhmax_max), iret=', ierr
+    endif
+!spfhmin_min
+    call nemsio_readrecv(gfile,'spfhmin_min','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%spfhmin_min(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (spfhmin_min), iret=', ierr
+    endif
+!watr_acc
+    call nemsio_readrecv(gfile,'watr_acc','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%watr_acc(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (watr_acc), iret=', ierr
+    endif
+!pevpr_ave
+    call nemsio_readrecv(gfile,'pevpr_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%pevpr_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (pevpr_ave), iret=', ierr
+    endif
+!cwork_ave
+    call nemsio_readrecv(gfile,'cwork_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%cwork_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (cwork_ave), iret=', ierr
+    endif
+!ugwd_ave
+    call nemsio_readrecv(gfile,'ugwd_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%ugwd_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (ugwd_ave), iret=', ierr
+    endif
+!vgwd_ave
+    call nemsio_readrecv(gfile,'vgwd_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%vgwd_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vgwd_ave), iret=', ierr
+    endif
+!hpbl
+    call nemsio_readrecv(gfile,'hpbl','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%hpbl(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (hpbl), iret=', ierr
+    endif
+!pwat
+    call nemsio_readrecv(gfile,'pwat','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%pwat(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (pwat), iret=', ierr
+    endif
+!tcdc
+    call nemsio_readrecv(gfile,'tcdc','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%tcdc(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (tcdc), iret=', ierr
+    endif
+!icetk
+    call nemsio_readrecv(gfile,'icetk','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%icetk(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (icetk), iret=', ierr
+    endif
+!soill
+    call nemsio_readrecv(gfile,'soill','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%soill(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (soill), iret=', ierr
+    endif
+!snod
+    call nemsio_readrecv(gfile,'snod','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%snod(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (snod), iret=', ierr
+    endif
+!cnwat
+    call nemsio_readrecv(gfile,'cnwat','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%cnwat(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (cnwat), iret=', ierr
+    endif
+!sfcr
+    call nemsio_readrecv(gfile,'sfcr','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%sfcr(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sfcr), iret=', ierr
+    endif
+!veg
+    call nemsio_readrecv(gfile,'veg','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%veg(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (veg), iret=', ierr
+    endif
+!vgtyp
+    call nemsio_readrecv(gfile,'vgtyp','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%vgtyp(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vgtyp), iret=', ierr
+    endif
+!sotyp
+    call nemsio_readrecv(gfile,'sotyp','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%sotyp(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sotyp), iret=', ierr
+    endif
+!sltyp
+    call nemsio_readrecv(gfile,'sltyp','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%sltyp(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sltyp), iret=', ierr
+    endif
+!fricv
+    call nemsio_readrecv(gfile,'fricv','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%fricv(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (fricv), iret=', ierr
+    endif
+!hgt
+    call nemsio_readrecv(gfile,'hgt','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%hgt(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (hgt), iret=', ierr
+    endif
+!crain
+    call nemsio_readrecv(gfile,'crain','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%crain(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (crain), iret=', ierr
+    endif
+!sfexc
+    call nemsio_readrecv(gfile,'sfexc','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%sfexc(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sfexc), iret=', ierr
+    endif
+!acond
+    call nemsio_readrecv(gfile,'acond','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%acond(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (acond), iret=', ierr
+    endif
+!pevpr
+    call nemsio_readrecv(gfile,'pevpr','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%pevpr(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (pevpr), iret=', ierr
+    endif
+!dlwrf
+    call nemsio_readrecv(gfile,'dlwrf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%dlwrf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (dlwrf), iret=', ierr
+    endif
+!ulwrf
+    call nemsio_readrecv(gfile,'ulwrf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%ulwrf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (ulwrf), iret=', ierr
+    endif
+!uswrf
+    call nemsio_readrecv(gfile,'uswrf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%uswrf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (uswrf), iret=', ierr
+    endif
+!dswrf
+    call nemsio_readrecv(gfile,'dswrf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%dswrf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (dswrf), iret=', ierr
+    endif
+!shtfl
+    call nemsio_readrecv(gfile,'shtfl','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%shtfl(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (shtfl), iret=', ierr
+    endif
+!lhtfl
+    call nemsio_readrecv(gfile,'lhtfl','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%lhtfl(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (lhtfl), iret=', ierr
+    endif
+!gflux
+    call nemsio_readrecv(gfile,'gflux','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%gflux(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (gflux), iret=', ierr
+    endif
+!ssrun_acc
+    call nemsio_readrecv(gfile,'ssrun_acc','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%ssrun_acc(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (ssrun_acc), iret=', ierr
+    endif
+!evbs_ave
+    call nemsio_readrecv(gfile,'evbs_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%evbs_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (evbs_ave), iret=', ierr
+    endif
+!evcw_ave
+    call nemsio_readrecv(gfile,'evcw_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%evcw_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (evcw_ave), iret=', ierr
+    endif
+!trans_ave
+    call nemsio_readrecv(gfile,'trans_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%trans_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (trans_ave), iret=', ierr
+    endif
+!sbsno_ave
+    call nemsio_readrecv(gfile,'sbsno_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%sbsno_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sbsno_ave), iret=', ierr
+    endif
+!snowc_ave
+    call nemsio_readrecv(gfile,'snowc_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%snowc_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (snowc_ave), iret=', ierr
+    endif
+!soilm
+    call nemsio_readrecv(gfile,'soilm','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%soilm(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (soilm), iret=', ierr
+    endif
+!snohf
+    call nemsio_readrecv(gfile,'snohf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%snohf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (snohf), iret=', ierr
+    endif
+!wilt
+    call nemsio_readrecv(gfile,'wilt','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%wilt(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (wilt), iret=', ierr
+    endif
+!fldcp
+    call nemsio_readrecv(gfile,'fldcp','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%fldcp(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (fldcp), iret=', ierr
+    endif
+!sunsd_acc
+    call nemsio_readrecv(gfile,'sunsd_acc','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%sunsd_acc(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sunsd_acc), iret=', ierr
+    endif
+!cpofp
+    call nemsio_readrecv(gfile,'cpofp','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsiodflx%cpofp(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (cpofp), iret=', ierr
+    endif
+!
+    deallocate(tmp)
+!
+  end subroutine nemsio_gfs_rdflx8
+!
 !-----------------------------------------------------------------------   
   subroutine nemsio_gfs_rdsfc8(gfile,nemsiodbta,iret)
 !-----------------------------------------------------------------------   
@@ -1308,7 +2656,668 @@ contains
     deallocate(tmp)
 !
   end subroutine nemsio_gfs_rdsfc8
-!   
+!  
+!-----------------------------------------------------------------------
+  subroutine nemsio_gfs_rdflx4(gfile,nemsioflx,iret)
+!-----------------------------------------------------------------------
+!
+    use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,nemsio_readrecv
+    implicit none
+!
+    type(nemsio_gfile),intent(inout) :: gfile
+    type(nemsio_flx), intent(inout) :: nemsioflx
+    integer,optional,  intent(out)   :: iret
+!local
+    integer im,jm,l,fieldsize,ierr
+    real(realkind),allocatable       :: tmp(:)
+!
+!---read out data from nemsio file
+!
+    call nemsio_getfilehead(gfile,dimx=im,dimy=jm,iret=ierr)
+    if(ierr /= 0) then
+       if(present(iret)) iret = ierr
+       print *,'ERROR: cannot get dimension from gfile'
+       return
+    endif
+    fieldsize = im*jm
+    im = size(nemsioflx%gflux,1)
+    jm = size(nemsioflx%gflux,2)
+    if(im*jm /= fieldsize) then
+       print *,'ERROR: dimension not match'
+       return
+    endif
+    allocate(tmp(fieldsize))
+    if(present(iret)) iret = 0
+
+!uflx_ave
+    call nemsio_readrecv(gfile,'uflx_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%uflx_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (uflx_ave), iret=', ierr
+    endif
+!vflx_ave
+    call nemsio_readrecv(gfile,'vflx_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%vflx_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vflx_ave), iret=', ierr
+    endif
+!shtfl_ave
+    call nemsio_readrecv(gfile,'shtfl_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%shtfl_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (shtfl_ave), iret=', ierr
+    endif
+!lhtfl_ave
+    call nemsio_readrecv(gfile,'lhtfl_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%lhtfl_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (lhtfl_ave), iret=', ierr
+    endif
+!tmp_ave
+    call nemsio_readrecv(gfile,'tmp_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%tmp_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (tmp_ave), iret=', ierr
+    endif
+!soilw
+    call nemsio_readrecv(gfile,'soilw','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%soilw(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (soilw), iret=', ierr
+    endif
+!ulwrf_ave
+    call nemsio_readrecv(gfile,'ulwrf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%ulwrf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (ulwrf_ave), iret=', ierr
+    endif
+!uswrf_ave
+    call nemsio_readrecv(gfile,'uswrf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%uswrf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (uswrf_ave), iret=', ierr
+    endif
+!dswrf_ave
+    call nemsio_readrecv(gfile,'dswrf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%dswrf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (dswrf_ave), iret=', ierr
+    endif
+!tcdc_ave
+    call nemsio_readrecv(gfile,'tcdc_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%tcdc_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (tcdc_ave), iret=', ierr
+    endif
+!pres_ave
+    call nemsio_readrecv(gfile,'pres_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%pres_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (pres_ave), iret=', ierr
+    endif
+!dlwrf_ave
+    call nemsio_readrecv(gfile,'dlwrf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%dlwrf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (dlwrf_ave), iret=', ierr
+    endif
+!duvb_ave
+    call nemsio_readrecv(gfile,'duvb_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%duvb_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (duvb_ave), iret=', ierr
+    endif
+!cduvb_ave
+    call nemsio_readrecv(gfile,'cduvb_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%cduvb_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (cduvb_ave), iret=', ierr
+    endif
+!vbdsf_ave
+    call nemsio_readrecv(gfile,'vbdsf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%vbdsf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vbdsf_ave), iret=', ierr
+    endif
+!vddsf_ave
+    call nemsio_readrecv(gfile,'vddsf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%vddsf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vddsf_ave), iret=', ierr
+    endif
+!nbdsf_ave
+    call nemsio_readrecv(gfile,'nbdsf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%nbdsf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (nbdsf_ave), iret=', ierr
+    endif
+!nddsf_ave
+    call nemsio_readrecv(gfile,'nddsf_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%nddsf_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (nddsf_ave), iret=', ierr
+    endif
+!csulf
+    call nemsio_readrecv(gfile,'csulf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%csulf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (csulf), iret=', ierr
+    endif
+!csusf
+    call nemsio_readrecv(gfile,'csusf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%csusf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (csusf), iret=', ierr
+    endif
+!csdlf
+    call nemsio_readrecv(gfile,'csdlf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%csdlf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (csdlf), iret=', ierr
+    endif
+!csdsf
+    call nemsio_readrecv(gfile,'csdsf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%csdsf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (csdsf), iret=', ierr
+    endif
+!albdo_ave
+    call nemsio_readrecv(gfile,'albdo_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%albdo_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (albdo_ave), iret=', ierr
+    endif
+!prate_ave
+    call nemsio_readrecv(gfile,'prate_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%prate_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (prate_ave), iret=', ierr
+    endif
+!cprat_ave
+    call nemsio_readrecv(gfile,'cprat_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%cprat_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (cprat_ave), iret=', ierr
+    endif
+!gflux_ave
+    call nemsio_readrecv(gfile,'gflux_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%gflux_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (gflux_ave), iret=', ierr
+    endif
+!land
+    call nemsio_readrecv(gfile,'land','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%land(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (land), iret=', ierr
+    endif
+!icec
+    call nemsio_readrecv(gfile,'icec','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%icec(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (icec), iret=', ierr
+    endif
+!ugrd
+    call nemsio_readrecv(gfile,'ugrd','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%ugrd(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (ugrd), iret=', ierr
+    endif
+!vgrd
+    call nemsio_readrecv(gfile,'vgrd','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%vgrd(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vgrd), iret=', ierr
+    endif
+!spfh
+    call nemsio_readrecv(gfile,'spfh','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%spfh(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (spfh), iret=', ierr
+    endif
+!pres
+    call nemsio_readrecv(gfile,'pres','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%pres(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (pres), iret=', ierr
+    endif
+!tmax_max
+    call nemsio_readrecv(gfile,'tmax_max','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%tmax_max(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (tmax_max), iret=', ierr
+    endif
+!tmin_min
+    call nemsio_readrecv(gfile,'tmin_min','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%tmin_min(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (tmin_min), iret=', ierr
+    endif
+!spfhmax_max
+    call nemsio_readrecv(gfile,'spfhmax_max','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%spfhmax_max(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (spfhmax_max), iret=', ierr
+    endif
+!spfhmin_min
+    call nemsio_readrecv(gfile,'spfhmin_min','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%spfhmin_min(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (spfhmin_min), iret=', ierr
+    endif
+!watr_acc
+    call nemsio_readrecv(gfile,'watr_acc','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%watr_acc(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (watr_acc), iret=', ierr
+    endif
+!pevpr_ave
+    call nemsio_readrecv(gfile,'pevpr_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%pevpr_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (pevpr_ave), iret=', ierr
+    endif
+!cwork_ave
+    call nemsio_readrecv(gfile,'cwork_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%cwork_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (cwork_ave), iret=', ierr
+    endif
+!ugwd_ave
+    call nemsio_readrecv(gfile,'ugwd_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%ugwd_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (ugwd_ave), iret=', ierr
+    endif
+!vgwd_ave
+    call nemsio_readrecv(gfile,'vgwd_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%vgwd_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vgwd_ave), iret=', ierr
+    endif
+!hpbl
+    call nemsio_readrecv(gfile,'hpbl','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%hpbl(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (hpbl), iret=', ierr
+    endif
+!pwat
+    call nemsio_readrecv(gfile,'pwat','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%pwat(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (pwat), iret=', ierr
+    endif
+!tcdc
+    call nemsio_readrecv(gfile,'tcdc','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%tcdc(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (tcdc), iret=', ierr
+    endif
+!icetk
+    call nemsio_readrecv(gfile,'icetk','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%icetk(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (icetk), iret=', ierr
+    endif
+!soill
+    call nemsio_readrecv(gfile,'soill','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%soill(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (soill), iret=', ierr
+    endif
+!snod
+    call nemsio_readrecv(gfile,'snod','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%snod(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (snod), iret=', ierr
+    endif
+!cnwat
+    call nemsio_readrecv(gfile,'cnwat','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%cnwat(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (cnwat), iret=', ierr
+    endif
+!sfcr
+    call nemsio_readrecv(gfile,'sfcr','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%sfcr(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sfcr), iret=', ierr
+    endif
+!veg
+    call nemsio_readrecv(gfile,'veg','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%veg(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (veg), iret=', ierr
+    endif
+!vgtyp
+    call nemsio_readrecv(gfile,'vgtyp','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%vgtyp(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (vgtyp), iret=', ierr
+    endif
+!sotyp
+    call nemsio_readrecv(gfile,'sotyp','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%sotyp(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sotyp), iret=', ierr
+    endif
+!sltyp
+    call nemsio_readrecv(gfile,'sltyp','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%sltyp(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sltyp), iret=', ierr
+    endif
+!fricv
+    call nemsio_readrecv(gfile,'fricv','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%fricv(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (fricv), iret=', ierr
+    endif
+!hgt
+    call nemsio_readrecv(gfile,'hgt','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%hgt(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (hgt), iret=', ierr
+    endif
+!crain
+    call nemsio_readrecv(gfile,'crain','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%crain(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (crain), iret=', ierr
+    endif
+!sfexc
+    call nemsio_readrecv(gfile,'sfexc','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%sfexc(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sfexc), iret=', ierr
+    endif
+!acond
+    call nemsio_readrecv(gfile,'acond','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%acond(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (acond), iret=', ierr
+    endif
+!pevpr
+    call nemsio_readrecv(gfile,'pevpr','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%pevpr(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (pevpr), iret=', ierr
+    endif
+!dlwrf
+    call nemsio_readrecv(gfile,'dlwrf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%dlwrf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (dlwrf), iret=', ierr
+    endif
+!ulwrf
+    call nemsio_readrecv(gfile,'ulwrf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%ulwrf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (ulwrf), iret=', ierr
+    endif
+!uswrf
+    call nemsio_readrecv(gfile,'uswrf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%uswrf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (uswrf), iret=', ierr
+    endif
+!dswrf
+    call nemsio_readrecv(gfile,'dswrf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%dswrf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (dswrf), iret=', ierr
+    endif
+!shtfl
+    call nemsio_readrecv(gfile,'shtfl','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%shtfl(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (shtfl), iret=', ierr
+    endif
+!lhtfl
+    call nemsio_readrecv(gfile,'lhtfl','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%lhtfl(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (lhtfl), iret=', ierr
+    endif
+!gflux
+    call nemsio_readrecv(gfile,'gflux','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%gflux(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (gflux), iret=', ierr
+    endif
+!ssrun_acc
+    call nemsio_readrecv(gfile,'ssrun_acc','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%ssrun_acc(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (ssrun_acc), iret=', ierr
+    endif
+!evbs_ave
+    call nemsio_readrecv(gfile,'evbs_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%evbs_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (evbs_ave), iret=', ierr
+    endif
+!evcw_ave
+    call nemsio_readrecv(gfile,'evcw_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%evcw_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (evcw_ave), iret=', ierr
+    endif
+!trans_ave
+    call nemsio_readrecv(gfile,'trans_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%trans_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (trans_ave), iret=', ierr
+    endif
+!sbsno_ave
+    call nemsio_readrecv(gfile,'sbsno_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%sbsno_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sbsno_ave), iret=', ierr
+    endif
+!snowc_ave
+    call nemsio_readrecv(gfile,'snowc_ave','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%snowc_ave(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (snowc_ave), iret=', ierr
+    endif
+!soilm
+    call nemsio_readrecv(gfile,'soilm','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%soilm(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (soilm), iret=', ierr
+    endif
+!snohf
+    call nemsio_readrecv(gfile,'snohf','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%snohf(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (snohf), iret=', ierr
+    endif
+!wilt
+    call nemsio_readrecv(gfile,'wilt','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%wilt(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (wilt), iret=', ierr
+    endif
+!fldcp
+    call nemsio_readrecv(gfile,'fldcp','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%fldcp(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (fldcp), iret=', ierr
+    endif
+!sunsd_acc
+    call nemsio_readrecv(gfile,'sunsd_acc','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%sunsd_acc(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (sunsd_acc), iret=', ierr
+    endif
+!cpofp
+    call nemsio_readrecv(gfile,'cpofp','flx',1,tmp,iret=ierr)
+    if(ierr == 0) then
+       nemsioflx%cpofp(:,:) = reshape(tmp,(/im,jm/) )
+    else
+       if(present(iret)) iret = ierr
+       print *, 'ERROR in rdflx (cpofp), iret=', ierr
+    endif
+!
+    deallocate(tmp)
+!
+  end subroutine nemsio_gfs_rdflx4
+! 
 !-----------------------------------------------------------------------   
   subroutine nemsio_gfs_rdsfc4(gfile,nemsiodata,iret)
 !-----------------------------------------------------------------------   
@@ -1652,8 +3661,579 @@ contains
     endif
     deallocate(tmp)
 !
-  end subroutine nemsio_gfs_rdsfc4
-!   
+  end subroutine nemsio_gfs_rdsfc4   
+!
+!-----------------------------------------------------------------------
+  subroutine nemsio_gfs_wrtflx8(gfile,nemsiodflx,iret)
+!-----------------------------------------------------------------------
+!
+    use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,nemsio_writerecv
+    implicit none
+!
+    type(nemsio_gfile),intent(inout) :: gfile
+    type(nemsio_dflx),intent(inout)  :: nemsiodflx
+    integer,optional, intent(out):: iret
+!local
+    integer im,jm,l,fieldsize,ierr
+    real(dblekind),allocatable ::tmp(:)
+!
+!---read out data from nemsio file
+!
+    call nemsio_getfilehead(gfile,dimx=im,dimy=jm,iret=ierr)
+    if(ierr /= 0) then
+       if(present(iret)) iret = ierr
+       print *,'ERROR: cannot get dimension from gfile'
+       return
+    endif
+    fieldsize = im*jm
+!    print *,'in nemsio_gfs_wrtflx,im=',im,'jm=',jm,fieldsize
+    allocate(tmp(fieldsize))
+!    print *,'nsoil=',nemsiohead%nsoil
+    if(present(iret)) iret = 0
+!uflx_ave
+    tmp = reshape(nemsiodflx%uflx_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (uflx_ave), iret=', ierr
+    endif
+!vflx_ave
+    tmp = reshape(nemsiodflx%vflx_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (vflx_ave), iret=', ierr
+    endif
+!shtfl_ave
+    tmp = reshape(nemsiodflx%shtfl_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (shtfl_ave), iret=', ierr
+    endif
+!lhtfl_ave
+    tmp = reshape(nemsiodflx%lhtfl_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (lhtfl_ave), iret=', ierr
+    endif
+!tmp_ave
+    tmp = reshape(nemsiodflx%tmp_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (tmp_ave), iret=', ierr
+    endif
+!soilw
+    tmp = reshape(nemsiodflx%soilw,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (soilw), iret=', ierr
+    endif
+!ulwrf_ave
+    tmp = reshape(nemsiodflx%ulwrf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (ulwrf_ave), iret=', ierr
+    endif
+!uswrf_ave
+    tmp = reshape(nemsiodflx%uswrf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (uswrf_ave), iret=', ierr
+    endif
+!dswrf_ave
+    tmp = reshape(nemsiodflx%dswrf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (dswrf_ave), iret=', ierr
+    endif
+!tcdc_ave
+    tmp = reshape(nemsiodflx%tcdc_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (tcdc_ave), iret=', ierr
+    endif
+!pres_ave
+    tmp = reshape(nemsiodflx%pres_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (pres_ave), iret=', ierr
+    endif
+!dlwrf_ave
+    tmp = reshape(nemsiodflx%dlwrf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (dlwrf_ave), iret=', ierr
+    endif
+!duvb_ave
+    tmp = reshape(nemsiodflx%duvb_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (duvb_ave), iret=', ierr
+    endif
+!cduvb_ave
+    tmp = reshape(nemsiodflx%cduvb_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (cduvb_ave), iret=', ierr
+    endif
+!vbdsf_ave
+    tmp = reshape(nemsiodflx%vbdsf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (vbdsf_ave), iret=', ierr
+    endif
+!vddsf_ave
+    tmp = reshape(nemsiodflx%vddsf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (vddsf_ave), iret=', ierr
+    endif
+!nbdsf_ave
+    tmp = reshape(nemsiodflx%nbdsf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (nbdsf_ave), iret=', ierr
+    endif
+!nddsf_ave
+    tmp = reshape(nemsiodflx%nddsf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (nddsf_ave), iret=', ierr
+    endif
+!csulf
+    tmp = reshape(nemsiodflx%csulf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (csulf), iret=', ierr
+    endif
+!csusf
+    tmp = reshape(nemsiodflx%csusf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (csusf), iret=', ierr
+    endif
+!csdlf
+    tmp = reshape(nemsiodflx%csdlf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (csdlf), iret=', ierr
+    endif
+!csdsf
+    tmp = reshape(nemsiodflx%csdsf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (csdsf), iret=', ierr
+    endif
+!albdo_ave
+    tmp = reshape(nemsiodflx%albdo_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (albdo_ave), iret=', ierr
+    endif
+!prate_ave
+    tmp = reshape(nemsiodflx%prate_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (prate_ave), iret=', ierr
+    endif
+!cprat_ave
+    tmp = reshape(nemsiodflx%cprat_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (cprat_ave), iret=', ierr
+    endif
+!gflux_ave
+    tmp = reshape(nemsiodflx%gflux_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (gflux_ave), iret=', ierr
+    endif
+!land
+    tmp = reshape(nemsiodflx%land,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (land), iret=', ierr
+    endif
+!icec
+    tmp = reshape(nemsiodflx%icec,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (icec), iret=', ierr
+    endif
+!ugrd
+    tmp = reshape(nemsiodflx%ugrd,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (ugrd), iret=', ierr
+    endif
+!vgrd
+    tmp = reshape(nemsiodflx%vgrd,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (vgrd), iret=', ierr
+    endif
+!spfh
+    tmp = reshape(nemsiodflx%spfh,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (spfh), iret=', ierr
+    endif
+!pres
+    tmp = reshape(nemsiodflx%pres,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (pres), iret=', ierr
+    endif
+!tmax_max
+    tmp = reshape(nemsiodflx%tmax_max,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (tmax_max), iret=', ierr
+    endif
+!tmin_min
+    tmp = reshape(nemsiodflx%tmin_min,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (tmin_min), iret=', ierr
+    endif
+!spfhmax_max
+    tmp = reshape(nemsiodflx%spfhmax_max,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (spfhmax_max), iret=', ierr
+    endif
+!spfhmin_min
+    tmp = reshape(nemsiodflx%spfhmin_min,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (spfhmin_min), iret=', ierr
+    endif
+!watr_acc
+    tmp = reshape(nemsiodflx%watr_acc,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (watr_acc), iret=', ierr
+    endif
+!pevpr_ave
+    tmp = reshape(nemsiodflx%pevpr_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (pevpr_ave), iret=', ierr
+    endif
+!cwork_ave
+    tmp = reshape(nemsiodflx%cwork_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (cwork_ave), iret=', ierr
+    endif
+!ugwd_ave
+    tmp = reshape(nemsiodflx%ugwd_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (ugwd_ave), iret=', ierr
+    endif
+!vgwd_ave
+    tmp = reshape(nemsiodflx%vgwd_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (vgwd_ave), iret=', ierr
+    endif
+!hpbl
+    tmp = reshape(nemsiodflx%hpbl,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (hpbl), iret=', ierr
+    endif
+!pwat
+    tmp = reshape(nemsiodflx%pwat,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (pwat), iret=', ierr
+    endif
+!tcdc
+    tmp = reshape(nemsiodflx%tcdc,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (tcdc), iret=', ierr
+    endif
+!icetk
+    tmp = reshape(nemsiodflx%icetk,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (icetk), iret=', ierr
+    endif
+!soill
+    tmp = reshape(nemsiodflx%soill,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (soill), iret=', ierr
+    endif
+!snod
+    tmp = reshape(nemsiodflx%snod,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (snod), iret=', ierr
+    endif
+!sfcr
+    tmp = reshape(nemsiodflx%sfcr,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (sfcr), iret=', ierr
+    endif
+!veg
+    tmp = reshape(nemsiodflx%veg,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (veg), iret=', ierr
+    endif
+!vgtyp
+    tmp = reshape(nemsiodflx%vgtyp,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (vgtyp), iret=', ierr
+    endif
+!sotyp
+    tmp = reshape(nemsiodflx%sotyp,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (sotyp), iret=', ierr
+    endif
+!sltyp
+    tmp = reshape(nemsiodflx%sltyp,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (sltyp), iret=', ierr
+    endif
+!fricv
+    tmp = reshape(nemsiodflx%fricv,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (fricv), iret=', ierr
+    endif
+!hgt
+    tmp = reshape(nemsiodflx%hgt,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (hgt), iret=', ierr
+    endif
+!crain
+    tmp = reshape(nemsiodflx%crain,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (crain), iret=', ierr
+    endif
+!sfexc
+    tmp = reshape(nemsiodflx%sfexc,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (sfexc), iret=', ierr
+    endif
+!acond
+    tmp = reshape(nemsiodflx%acond,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (acond), iret=', ierr
+    endif
+!pevpr
+    tmp = reshape(nemsiodflx%pevpr,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (pevpr), iret=', ierr
+    endif
+!dlwrf
+    tmp = reshape(nemsiodflx%dlwrf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (dlwrf), iret=', ierr
+    endif
+!ulwrf
+    tmp = reshape(nemsiodflx%ulwrf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (ulwrf), iret=', ierr
+    endif
+!uswrf
+    tmp = reshape(nemsiodflx%uswrf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (uswrf), iret=', ierr
+    endif
+!dswrf
+    tmp = reshape(nemsiodflx%dswrf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (dswrf), iret=', ierr
+    endif
+!shtfl
+    tmp = reshape(nemsiodflx%shtfl,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (shtfl), iret=', ierr
+    endif
+!lhtfl
+    tmp = reshape(nemsiodflx%lhtfl,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (lhtfl), iret=', ierr
+    endif
+!gflux
+    tmp = reshape(nemsiodflx%gflux,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (gflux), iret=', ierr
+    endif
+!ssrun_acc
+    tmp = reshape(nemsiodflx%ssrun_acc,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (ssrun_acc), iret=', ierr
+    endif
+!evbs_ave
+    tmp = reshape(nemsiodflx%evbs_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (evbs_ave), iret=', ierr
+    endif
+!evcw_ave
+    tmp = reshape(nemsiodflx%evcw_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (evcw_ave), iret=', ierr
+    endif
+!trans_ave
+    tmp = reshape(nemsiodflx%trans_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (trans_ave), iret=', ierr
+    endif
+!sbsno_ave
+    tmp = reshape(nemsiodflx%sbsno_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (sbsno_ave), iret=', ierr
+    endif
+!snowc_ave
+    tmp = reshape(nemsiodflx%snowc_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (snowc_ave), iret=', ierr
+    endif
+!soilm
+    tmp = reshape(nemsiodflx%soilm,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (soilm), iret=', ierr
+    endif
+!snohf
+    tmp = reshape(nemsiodflx%snohf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (snohf), iret=', ierr
+    endif
+!wilt
+    tmp = reshape(nemsiodflx%wilt,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (wilt), iret=', ierr
+    endif
+!fldcp
+    tmp = reshape(nemsiodflx%fldcp,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (fldcp), iret=', ierr
+    endif
+!sunsd_acc
+    tmp = reshape(nemsiodflx%sunsd_acc,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (sunsd_acc), iret=', ierr
+    endif
+!cpofp
+    tmp = reshape(nemsiodflx%cpofp,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx8 (cpofp), iret=', ierr
+    endif
+!
+    deallocate(tmp)
+!
+  end subroutine nemsio_gfs_wrtflx8
+!
 !-----------------------------------------------------------------------   
   subroutine nemsio_gfs_wrtsfc8(gfile,nemsiodbta,iret)
 !-----------------------------------------------------------------------   
@@ -1957,6 +4537,577 @@ contains
     deallocate(tmp)
 !
   end subroutine nemsio_gfs_wrtsfc8
+!
+!-----------------------------------------------------------------------
+  subroutine nemsio_gfs_wrtflx4(gfile,nemsioflx,iret)
+!-----------------------------------------------------------------------
+!
+    use nemsio_module, only : nemsio_gfile,nemsio_getfilehead,nemsio_writerecv
+    implicit none
+!
+    type(nemsio_gfile),intent(inout) :: gfile
+    type(nemsio_flx), intent(inout) :: nemsioflx
+    integer,optional,  intent(out)   :: iret
+!local
+    integer im,jm,l,fieldsize,ierr
+    real(realkind),allocatable       :: tmp(:)
+!
+!---read out data from nemsio file
+!
+    call nemsio_getfilehead(gfile,dimx=im,dimy=jm,iret=ierr)
+    if(ierr /= 0) then
+       if(present(iret)) iret = ierr
+       print *,'ERROR: cannot get dimension from gfile'
+       return
+    endif
+    fieldsize = im*jm
+!    print *,'in nemsio_gfs_wrtflx,im=',im,'jm=',jm,fieldsize
+    allocate(tmp(fieldsize))
+!    print *,'nsoil=',nsoil
+    if(present(iret)) iret = 0
+!uflx_ave
+    tmp = reshape(nemsioflx%uflx_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (uflx_ave), iret=', ierr
+    endif
+!vflx_ave
+    tmp = reshape(nemsioflx%vflx_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (vflx_ave), iret=', ierr
+    endif
+!shtfl_ave
+    tmp = reshape(nemsioflx%shtfl_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (shtfl_ave), iret=', ierr
+    endif
+!lhtfl_ave
+    tmp = reshape(nemsioflx%lhtfl_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (lhtfl_ave), iret=', ierr
+    endif
+!tmp_ave
+    tmp = reshape(nemsioflx%tmp_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (tmp_ave), iret=', ierr
+    endif
+!soilw
+    tmp = reshape(nemsioflx%soilw,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (soilw), iret=', ierr
+    endif
+!ulwrf_ave
+    tmp = reshape(nemsioflx%ulwrf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (ulwrf_ave), iret=', ierr
+    endif
+!uswrf_ave
+    tmp = reshape(nemsioflx%uswrf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (uswrf_ave), iret=', ierr
+    endif
+!dswrf_ave
+    tmp = reshape(nemsioflx%dswrf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (dswrf_ave), iret=', ierr
+    endif
+!tcdc_ave
+    tmp = reshape(nemsioflx%tcdc_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (tcdc_ave), iret=', ierr
+    endif
+!pres_ave
+    tmp = reshape(nemsioflx%pres_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (pres_ave), iret=', ierr
+    endif
+!dlwrf_ave
+    tmp = reshape(nemsioflx%dlwrf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (dlwrf_ave), iret=', ierr
+    endif
+!duvb_ave
+    tmp = reshape(nemsioflx%duvb_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (duvb_ave), iret=', ierr
+    endif
+!cduvb_ave
+    tmp = reshape(nemsioflx%cduvb_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (cduvb_ave), iret=', ierr
+    endif
+!vbdsf_ave
+    tmp = reshape(nemsioflx%vbdsf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (vbdsf_ave), iret=', ierr
+    endif
+!vddsf_ave
+    tmp = reshape(nemsioflx%vddsf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (vddsf_ave), iret=', ierr
+    endif
+!nbdsf_ave
+    tmp = reshape(nemsioflx%nbdsf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (nbdsf_ave), iret=', ierr
+    endif
+!nddsf_ave
+    tmp = reshape(nemsioflx%nddsf_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (nddsf_ave), iret=', ierr
+    endif
+!csulf
+    tmp = reshape(nemsioflx%csulf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (csulf), iret=', ierr
+    endif
+!csusf
+    tmp = reshape(nemsioflx%csusf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (csusf), iret=', ierr
+    endif
+!csdlf
+    tmp = reshape(nemsioflx%csdlf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (csdlf), iret=', ierr
+    endif
+!csdsf
+    tmp = reshape(nemsioflx%csdsf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (csdsf), iret=', ierr
+    endif
+!albdo_ave
+    tmp = reshape(nemsioflx%albdo_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (albdo_ave), iret=', ierr
+    endif
+!prate_ave
+    tmp = reshape(nemsioflx%prate_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (prate_ave), iret=', ierr
+    endif
+!cprat_ave
+    tmp = reshape(nemsioflx%cprat_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (cprat_ave), iret=', ierr
+    endif
+!gflux_ave
+    tmp = reshape(nemsioflx%gflux_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (gflux_ave), iret=', ierr
+    endif
+!land
+    tmp = reshape(nemsioflx%land,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (land), iret=', ierr
+    endif
+!icec
+    tmp = reshape(nemsioflx%icec,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (icec), iret=', ierr
+    endif
+!ugrd
+    tmp = reshape(nemsioflx%ugrd,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (ugrd), iret=', ierr
+    endif
+!vgrd
+    tmp = reshape(nemsioflx%vgrd,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (vgrd), iret=', ierr
+    endif
+!spfh
+    tmp = reshape(nemsioflx%spfh,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (spfh), iret=', ierr
+    endif
+!pres
+    tmp = reshape(nemsioflx%pres,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (pres), iret=', ierr
+    endif
+!tmax_max
+    tmp = reshape(nemsioflx%tmax_max,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (tmax_max), iret=', ierr
+    endif
+!tmin_min
+    tmp = reshape(nemsioflx%tmin_min,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (tmin_min), iret=', ierr
+    endif
+!spfhmax_max
+    tmp = reshape(nemsioflx%spfhmax_max,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (spfhmax_max), iret=', ierr
+    endif
+!spfhmin_min
+    tmp = reshape(nemsioflx%spfhmin_min,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (spfhmin_min), iret=', ierr
+    endif
+!watr_acc
+    tmp = reshape(nemsioflx%watr_acc,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (watr_acc), iret=', ierr
+    endif
+!pevpr_ave
+    tmp = reshape(nemsioflx%pevpr_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (pevpr_ave), iret=', ierr
+    endif
+!cwork_ave
+    tmp = reshape(nemsioflx%cwork_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (cwork_ave), iret=', ierr
+    endif
+!ugwd_ave
+    tmp = reshape(nemsioflx%ugwd_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (ugwd_ave), iret=', ierr
+    endif
+!vgwd_ave
+    tmp = reshape(nemsioflx%vgwd_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (vgwd_ave), iret=', ierr
+    endif
+!hpbl
+    tmp = reshape(nemsioflx%hpbl,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (hpbl), iret=', ierr
+    endif
+!pwat
+    tmp = reshape(nemsioflx%pwat,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (pwat), iret=', ierr
+    endif
+!tcdc
+    tmp = reshape(nemsioflx%tcdc,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (tcdc), iret=', ierr
+    endif
+!icetk
+    tmp = reshape(nemsioflx%icetk,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (icetk), iret=', ierr
+    endif
+!soill
+    tmp = reshape(nemsioflx%soill,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (soill), iret=', ierr
+    endif
+!snod
+    tmp = reshape(nemsioflx%snod,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (snod), iret=', ierr
+    endif
+!sfcr
+    tmp = reshape(nemsioflx%sfcr,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (sfcr), iret=', ierr
+    endif
+!veg
+    tmp = reshape(nemsioflx%veg,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (veg), iret=', ierr
+    endif
+!vgtyp
+    tmp = reshape(nemsioflx%vgtyp,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (vgtyp), iret=', ierr
+    endif
+!sotyp
+    tmp = reshape(nemsioflx%sotyp,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (sotyp), iret=', ierr
+    endif
+!sltyp
+    tmp = reshape(nemsioflx%sltyp,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (sltyp), iret=', ierr
+    endif
+!fricv
+    tmp = reshape(nemsioflx%fricv,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (fricv), iret=', ierr
+    endif
+!hgt
+    tmp = reshape(nemsioflx%hgt,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (hgt), iret=', ierr
+    endif
+!crain
+    tmp = reshape(nemsioflx%crain,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (crain), iret=', ierr
+    endif
+!sfexc
+    tmp = reshape(nemsioflx%sfexc,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (sfexc), iret=', ierr
+    endif
+!acond
+    tmp = reshape(nemsioflx%acond,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (acond), iret=', ierr
+    endif
+!pevpr
+    tmp = reshape(nemsioflx%pevpr,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (pevpr), iret=', ierr
+    endif
+!dlwrf
+    tmp = reshape(nemsioflx%dlwrf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (dlwrf), iret=', ierr
+    endif
+!ulwrf
+    tmp = reshape(nemsioflx%ulwrf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (ulwrf), iret=', ierr
+    endif
+!uswrf
+    tmp = reshape(nemsioflx%uswrf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (uswrf), iret=', ierr
+    endif
+!dswrf
+    tmp = reshape(nemsioflx%dswrf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (dswrf), iret=', ierr
+    endif
+!shtfl
+    tmp = reshape(nemsioflx%shtfl,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (shtfl), iret=', ierr
+    endif
+!lhtfl
+    tmp = reshape(nemsioflx%lhtfl,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (lhtfl), iret=', ierr
+    endif
+!gflux
+    tmp = reshape(nemsioflx%gflux,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (gflux), iret=', ierr
+    endif
+!ssrun_acc
+    tmp = reshape(nemsioflx%ssrun_acc,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (ssrun_acc), iret=', ierr
+    endif
+!evbs_ave
+    tmp = reshape(nemsioflx%evbs_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (evbs_ave), iret=', ierr
+    endif
+!evcw_ave
+    tmp = reshape(nemsioflx%evcw_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (evcw_ave), iret=', ierr
+    endif
+!trans_ave
+    tmp = reshape(nemsioflx%trans_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (trans_ave), iret=', ierr
+    endif
+!sbsno_ave
+    tmp = reshape(nemsioflx%sbsno_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (sbsno_ave), iret=', ierr
+    endif
+!snowc_ave
+    tmp = reshape(nemsioflx%snowc_ave,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (snowc_ave), iret=', ierr
+    endif
+!soilm
+    tmp = reshape(nemsioflx%soilm,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (soilm), iret=', ierr
+    endif
+!snohf
+    tmp = reshape(nemsioflx%snohf,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (snohf), iret=', ierr
+    endif
+!wilt
+    tmp = reshape(nemsioflx%wilt,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (wilt), iret=', ierr
+    endif
+!fldcp
+    tmp = reshape(nemsioflx%fldcp,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (fldcp), iret=', ierr
+    endif
+!sunsd_acc
+    tmp = reshape(nemsioflx%sunsd_acc,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (sunsd_acc), iret=', ierr
+    endif
+!cpofp
+    tmp = reshape(nemsioflx%cpofp,(/fieldsize/) )
+    call nemsio_writerecv(gfile,'tmp','flx',1,tmp,iret=ierr)
+    if(ierr /= 0) then
+      if(present(iret)) iret = ierr
+      print *,'ERROR in wrtflx4 (cpofp), iret=', ierr
+    endif
+!
+    deallocate(tmp)
+!
+  end subroutine nemsio_gfs_wrtflx4
 !
 !-----------------------------------------------------------------------   
   subroutine nemsio_gfs_wrtsfc4(gfile,nemsiodata,iret)

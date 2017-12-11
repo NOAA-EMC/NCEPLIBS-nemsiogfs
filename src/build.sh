@@ -9,7 +9,7 @@
 
 #set -x
 
-export VER="v2.0.0"
+export VER="v2.2.0"
 module purge
 
 mac=$(hostname -f)
@@ -24,7 +24,7 @@ case $mac in
     module load nemsio/v2.2.2
     module list
 
-    export LIBDIR='../'
+    export LIBDIR='..'
     export INC='include'
     export FCOMP=ifort
     export FCFLAGS='-O3 -FR -I$(NEMSIO_INC)'
@@ -73,7 +73,7 @@ tfe??)  # theia
 
     module load intel
 
-    export LIBDIR='../'
+    export LIBDIR='..'
     export INC='include'
     export FCOMP=ifort
     export FCFLAGS='-O3 -FR -I$(NEMSIO_INC)'
