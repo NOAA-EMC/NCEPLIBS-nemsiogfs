@@ -1,0 +1,150 @@
+             README for NEMSIOGFS
+
+            NOAA/NCEP/EMC NCWCP 2016
+         BYTE-ADDRESSABLE I/O C PACKAGE
+        Originally written by M.Iredell & J.Wang
+
+ Code Management and Version targeted to improve performance by Hang Lei
+
+
+Location: URL:
+https://svnemc.ncep.noaa.gov/projects/nceplibs/nemsiogfs/tags/v2.0.1
+
+Directory contains:
+
+README                   - current file
+src
+modulefiles
+unit_test
+
+===========================================================================
+
+
+Release Notes
+-------------
+Add unit_test for nemsiogfs library.
+The test fully exame the library function as its originally proposed.
+The compile of unit_test need to choose apporpriate support libraries based on machine.
+-------------
+Adjust to NCO format for version v2.2.0
+on WCOSS-Phase 1/2
+----------------------------------------------
+lib/nemsiogfs/v2.2.0
+            |
+            `--src
+            `--modulefiles
+            |     | 
+            |     `--v2.2.0
+            `--unit_test
+            `--libnemsiogfs_v2.2.0.a
+            |
+            `--include
+                  |
+                  `--nemsiogfs_v2.2.0
+                           |
+                           `--nemsio_gfs.mod
+
+
+on WCOSS-Cray
+-----------------------------------------
+lib/nemsiogfs/v2.2.0
+      |
+      `--src
+      `--modulefiles
+      |     | 
+      |     `--v2.2.0
+      `--unit_test
+      `--intel
+      |     |
+      |     `--libnemsiogfs_v2.2.0.a
+      |     |
+      |     `--include
+      |           |
+      |           `--nemsiogfs_v2.2.0
+      |                    |
+      |                    `--nemsio_gfs.mod
+      |
+      `--cray 
+            |
+            `--libnemsiogfs_v2.2.0.a
+            |
+            `--include
+                  |
+                  `--nemsiogfs_v2.2.0
+                           |
+                           `--NEMSIO_GFS.mod
+
+
+
+
+
+Library: nemsiogfs
+Version: 2.2.0
+Purpose: Performs i/o for the NEMS-GFS model.
+Developed by: NCEP/EMC
+Contact info:  NCEP.List.EMC.nceplibs.Developers@noaa.gov
+               Hang.Lei@noaa.gov 
+
+Change History
+--------------
+ v1.0.0 - Initial Version
+ v1.1.0 - Release the read and write order of GFS variables in nemsio files. 
+ v2.0.0 - Correct error in write of albedo ('alvsf' component) in routine
+          nemsio_gfs_wrfsfc4.  The write of 'alvsf' was inadvertently commented
+          out, which resulted in a field of all zereos being written to a nems output
+          file. Reorganize directories to better conform to NCO vertical structure.
+          New driver script to build code on all WCOSS machines.  Add TKE.
+          Create "_slg" versions of routines without p, dp and vvel.
+          Remove "_slg" versions and add nopdpvv option to exclude dp, p.
+          Use meta data header to decide which fields are read/written.
+ v2.0.1 - For relocation code runs on Cray without P, DP, and vvel, Fanglin pass the 
+          indicator "nopdpvv" to function 'nemsio_gfsgrd_open' above previous version.
+ v2.2.0 - update based on v2.0.1 to include the flux variables and missing surface 
+          vaiables, and new functions defined to use these variables. Furhter update 
+          of variables may be based on changes in model development.
+Implementation Instructions on WCOSS-Phase 1/2
+----------------------------------------------
+ - cd to appropriate build directory
+ - checkout subversion tag: https://svnemc.ncep.noaa.gov/projects/nceplibs/nemsiogfs/tags/v2.0.0
+ - cd to the ./src directory
+ - type "build.sh" to build library with the Intel compiler.
+ - the library and include module will be placed in the following directory structure:
+
+            |
+            `--libnemsiogfs.a
+            |
+            `--include
+                  |
+                  `--nemsiogfs
+                           |
+                           `--nemsio_gfs.mod
+
+
+Implementation Instructions on WCOSS-Cray
+-----------------------------------------
+ - cd to appropriate build directory
+ - checkout subversion tag: https://svnemc.ncep.noaa.gov/projects/nceplibs/nemsiogfs/tags/v2.0.0
+ - cd to the ./src directory
+ - type "build.sh".  Library will be built with Intel and Cray compilers.
+ - the library and include module will be placed in the following directory structure:
+
+      |
+      `--intel
+      |     |
+      |     `--libnemsiogfs.a
+      |     |
+      |     `--include
+      |           |
+      |           `--nemsiogfs
+      |                    |
+      |                    `--nemsio_gfs.mod
+      |
+      `--cray 
+            |
+            `--libnemsiogfs.a
+            |
+            `--include
+                  |
+                  `--nemsiogfs
+                           |
+                           `--NEMSIO_GFS.mod
