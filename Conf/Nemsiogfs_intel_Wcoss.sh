@@ -1,7 +1,14 @@
 # *** for WCOSS IBM phase1/phase2 (intel) ***
+ module purge
  module load ics/17.0.3
- module load nemsio/v2.2.4
- module load nemsiogfs/v2.2.0
+
+ module load nemsio/v2.2.3
+ new_ver=2.2.4
+ reset_version nemsio $new_ver
+
+ module load nemsiogfs/v2.0.1
+ new_ver=2.2.0
+ reset_version nemsiogfs $new_ver
 
  export CC=icc
  export FC=ifort
