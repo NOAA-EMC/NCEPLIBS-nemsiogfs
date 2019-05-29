@@ -82,7 +82,7 @@ set -x
 #
    $local && {
               LIB_DIR=..
-              INCP_DIR=..
+              INCP_DIR=../include
               SRC_DIR=
              } || {
               LIB_DIR=$(dirname $NEMSIOGFS_LIB)

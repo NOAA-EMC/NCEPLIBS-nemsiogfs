@@ -23,7 +23,7 @@
  export OMPCC="$CC -fopenmp"
  export OMPFC="$FC -fopenmp"
  export MPICC=mpigcc
- export MPIFC=mpigfortran
+ export MPIFC=mpif90
 
  export DEBUG="-g -O0"
  export CFLAGS="-O3 -fPIC"
