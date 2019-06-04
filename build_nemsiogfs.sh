@@ -1,14 +1,14 @@
 #!/bin/sh
 
  (( $# == 0 )) && {
-   echo "*** Usage: $0 wcoss|dell|cray|theia|intel_general|gnu_general [debug|build] [[local]install[only]]"
+   echo "*** Usage: $0 wcoss|dell|cray|theia|intel_general|gnu_general [debug|build] [[local]install[only]]" >&2
    exit 1
  }
 
  sys=${1,,}
  [[ $sys == wcoss || $sys == dell || $sys == cray ||\
     $sys == theia || $sys == intel_general || $sys == gnu_general ]] || {
-   echo "*** Usage: $0 wcoss|dell|cray|theia|intel_general|gnu_general [debug|build] [[local]install[only]]"
+   echo "*** Usage: $0 wcoss|dell|cray|theia|intel_general|gnu_general [debug|build] [[local]install[only]]" >&2
    exit 1
  }
  debg=false
@@ -45,8 +45,12 @@
  else
    source ./Conf/Nemsiogfs_intel_${sys^}.sh
  fi
+ $CC --version &> /dev/null || {
+   echo "??? NEMSIOGFS: compilers not set." >&2
+   exit 1
+ }
  [[ -z $NEMSIOGFS_VER || -z $NEMSIOGFS_LIB ]] && {
-   echo "??? NEMSIOGFS: module/environment not set."
+   echo "??? NEMSIOGFS: module/environment not set." >&2
    exit 1
  }
 
@@ -83,6 +87,7 @@ set -x
    $local && {
               LIB_DIR=..
               INCP_DIR=../include
+              [ -d $INCP_DIR ] || { mkdir -p $INCP_DIR; }
               SRC_DIR=
              } || {
               LIB_DIR=$(dirname $NEMSIOGFS_LIB)

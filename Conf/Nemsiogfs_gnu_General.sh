@@ -1,10 +1,12 @@
 # *** manually set environments (for gnu compiler) of nemsiogfs ***
 
-# !!! module environment (*THEIA*) !!!
- module load gcc/4.9.1
-#module load gcc/6.2.0
- module use -a /apps/modules/modulefamilies/intel
- module load impi/5.1.2.150
+ : ${USERMODE:=false}  # user mode (USERMODE) is closed by default
+                       # set env var USERMODE to "true" to active it
+ ${USERMODE} && {
+    echo "Environment set by user"
+    echo "Use default GCC compiler for compatible to w3emc"
+    source /apps/intel/impi/5.1.2.150/bin64/mpivars.sh
+ }
 
  ANCHORDIR=..
  export COMP=gnu/impi
