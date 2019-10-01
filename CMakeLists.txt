@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 set(LIBNAME nemsiogfs )
+set(VERSION v2.2.1)
 enable_language (Fortran)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
@@ -32,7 +33,7 @@ set_target_properties( ${LIBNAME} PROPERTIES COMPILE_FLAGS ${CMAKE_Fortran_FLAGS
 set(CMAKE_INCLUDE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include")
 set_target_properties(${LIBNAME} PROPERTIES Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include")
 target_include_directories(${LIBNAME} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/include" ${NEMSIO_INC} )
-target_link_libraries(${LIBNAME} ${BACIO_LIBRARY} ${W3NCO_LIBRARY} ${IP_LIBRARY} ${SP_LIBRARY} ${OpenMP_Fortran_FLAGS})
+target_link_libraries(${LIBNAME} ${BACIO_LIB4} ${W3NCO_LIBd} ${IP_LIBd} ${SP_LIBd} ${OpenMP_Fortran_FLAGS})
 
 file(MAKE_DIRECTORY ${CMAKE_INCLUDE_OUTPUT_DIRECTORY})
 
