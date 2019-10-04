@@ -8,17 +8,6 @@
     source /apps/intel/impi/5.1.2.150/bin64/mpivars.sh
  }
 
- ANCHORDIR=..
- export COMP=gnu/impi
- export NEMSIOGFS_VER=v2.2.0
- export NEMSIOGFS_SRC=
- export NEMSIOGFS_INC=$ANCHORDIR/${COMP#*/}/include/nemsiogfs_${NEMSIOGFS_VER}
- export NEMSIOGFS_LIB=$ANCHORDIR/${COMP#*/}/libnemsiogfs_${NEMSIOGFS_VER}.a
-
- NEMSIO_DIR=../../NCEPLIBS-nemsio
- export NEMSIO_VER=v2.2.4
- export NEMSIO_INC=$NEMSIO_DIR/${COMP#*/}/include/nemsio_${NEMSIO_VER}
-
  export CC=gcc
  export FC=gfortran
  export CPP=cpp

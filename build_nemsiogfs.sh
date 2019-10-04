@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
  : ${THISDIR:=$(dirname $(readlink -f -n ${BASH_SOURCE[0]}))}
  CDIR=$PWD; cd $THISDIR
@@ -11,9 +11,11 @@
  if [[ ${sys} == "intel_general" ]]; then
    sys6=${sys:6}
    source ./Conf/Nemsiogfs_${sys:0:5}_${sys6^}.sh
+   rinst=false
  elif [[ ${sys} == "gnu_general" ]]; then
    sys4=${sys:4}
    source ./Conf/Nemsiogfs_${sys:0:3}_${sys4^}.sh
+   rinst=false
  else
    source ./Conf/Nemsiogfs_intel_${sys^}.sh
  fi
@@ -21,9 +23,14 @@
    echo "??? NEMSIOGFS: compilers not set." >&2
    exit 1
  }
- [[ -z $NEMSIOGFS_VER || -z $NEMSIOGFS_LIB ]] && {
-   echo "??? NEMSIOGFS: module/environment not set." >&2
-   exit 1
+ [[ -z ${NEMSIOGFS_VER+x} || -z ${NEMSIOGFS_LIB+x} ]] && {
+   [[ -z ${libver+x} || -z ${libver} ]] && {
+     echo "??? NEMSIOGFS: \"libver\" not set." >&2
+     exit
+   }
+   NEMSIOGFS_INC=${libver}
+   NEMSIOGFS_LIB=lib${libver}.a
+   NEMSIOGFS_VER=v${libver##*_v}
  }
 
 set -x
@@ -34,7 +41,6 @@ set -x
  cd src
 #################
 
- $skip || {
 #-------------------------------------------------------------------
 # Start building libraries
 #
@@ -50,7 +56,6 @@ set -x
          || make build LIB=$nemsiogfsLib &> $nemsiogfsInfo
    make message MSGSRC="$(gen_cfunction $nemsiogfsInfo OneLine LibInfo)" \
                 LIB=$nemsiogfsLib
- }
 
  $inst && {
 #
@@ -58,24 +63,28 @@ set -x
 #
    $local && {
      instloc=..
-     LIB_DIR=$instloc
+     LIB_DIR=$instloc/lib
      INCP_DIR=$instloc/include
+     [ -d $LIB_DIR ] || { mkdir -p $LIB_DIR; }
      [ -d $INCP_DIR ] || { mkdir -p $INCP_DIR; }
      SRC_DIR=
    } || {
-     [[ $instloc == --- ]] && {
+     $rinst && {
        LIB_DIR=$(dirname $NEMSIOGFS_LIB)
        INCP_DIR=$(dirname $NEMSIOGFS_INC)
+       [ -d $NEMSIOGFS_INC ] && { rm -rf $NEMSIOGFS_INC; } \
+                          || { mkdir -p $INCP_DIR; }
        SRC_DIR=$NEMSIOGFS_SRC
      } || {
-       LIB_DIR=$instloc
+       LIB_DIR=$instloc/lib
        INCP_DIR=$instloc/include
-       SRC_DIR=$instloc/src
        [[ $instloc == .. ]] && SRC_DIR=
+       NEMSIOGFS_INC=$INCP_DIR/$NEMSIOGFS_INC
+       [ -d $NEMSIOGFS_INC ] && { rm -rf $NEMSIOGFS_INC; } \
+                          || { mkdir -p $INCP_DIR; }
+       SRC_DIR=$instloc/src
      }
      [ -d $LIB_DIR ] || mkdir -p $LIB_DIR
-     [ -d $NEMSIOGFS_INC ] && { rm -rf $NEMSIOGFS_INC; } \
-                        || { mkdir -p $INCP_DIR; }
      [ -z $SRC_DIR ] || { [ -d $SRC_DIR ] || mkdir -p $SRC_DIR; }
    }
 
