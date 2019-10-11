@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
-set(LIBNAME nemsiogfs )
 set(VERSION v2.2.1)
+set(LIBNAME nemsiogfs_${VERSION} )
 enable_language (Fortran)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
