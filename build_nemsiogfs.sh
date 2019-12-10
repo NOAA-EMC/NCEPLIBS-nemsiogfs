@@ -82,7 +82,7 @@ set -x
        NEMSIOGFS_INC=$INCP_DIR/$NEMSIOGFS_INC
        [ -d $NEMSIOGFS_INC ] && { rm -rf $NEMSIOGFS_INC; } \
                           || { mkdir -p $INCP_DIR; }
-       SRC_DIR=$instloc/src
+       SRC_DIR=$instloc/src/${libver}
      }
      [ -d $LIB_DIR ] || mkdir -p $LIB_DIR
      [ -z $SRC_DIR ] || { [ -d $SRC_DIR ] || mkdir -p $SRC_DIR; }
