@@ -1,9 +1,10 @@
-cmake_minimum_required(VERSION 2.6)
-project(ncep_nemsiogfs)
-set(VERSION v2.2.1)
-set(LIBNAME nemsiogfs_${VERSION} )
+cmake_minimum_required(VERSION 3.16)
+project(nemsiogfs VERSION 2.2.1)
+set(${PROJECT_NAME}_VERSION ${PROJECT_VERSION} CACHE INTERNAL "${PROJECT_NAME} version number")
+
 enable_language (Fortran)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
   set(IntelComp true )
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU*" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang*")
@@ -19,27 +20,67 @@ if(CMAKE_BUILD_TYP)
   STRING(COMPARE EQUAL ${CMAKE_BUILD_TYPE} "PRODUCTION" BUILD_PRODUCTION)
   STRING(COMPARE EQUAL ${CMAKE_BUILD_TYPE} "DEBUG" BUILD_DEBUG)
 endif()
-file(GLOB LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.f ${CMAKE_CURRENT_SOURCE_DIR}/src/*.f90 ${CMAKE_CURRENT_SOURCE_DIR}/src/*.F)
+
+
 if(IntelComp)
-    set(CMAKE_Fortran_FLAGS "-O3 -FR -axCore-AVX2 " CACHE INTERNAL "" )
+  set(fortran_flags "-O3" "-FR" "-axCore-AVX2")
 elseif(GNUComp)
-    set(CMAKE_Fortran_FLAGS "-O3 -ffree-form " CACHE INTERNAL "" )
+  set(fortran_flags "-O3" "-ffree-form")
 else()
-    message("unknown compiler!")
-    exit()
+  message("unknown compiler!")
+  exit()
 endif()
-find_package(NEMSIO REQUIRED)
-add_library(${LIBNAME} ${LIB_SRC} ${LIB_C_SRC} )
-set_target_properties( ${LIBNAME} PROPERTIES COMPILE_FLAGS ${CMAKE_Fortran_FLAGS} )
-set(CMAKE_INCLUDE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include")
-set_target_properties(${LIBNAME} PROPERTIES Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include")
-target_include_directories(${LIBNAME} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/include" ${NEMSIO_INC} )
-target_link_libraries(${LIBNAME} ${BACIO_LIB4} ${W3NCO_LIBd} ${IP_LIBd} ${SP_LIBd} ${OpenMP_Fortran_FLAGS})
 
-file(MAKE_DIRECTORY ${CMAKE_INCLUDE_OUTPUT_DIRECTORY})
+file(GLOB fortran_src
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/*.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/*.f90
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/*.F)
 
-install(TARGETS ${LIBNAME}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-install(DIRECTORY ${CMAKE_INCLUDE_OUTPUT_DIRECTORY}/ DESTINATION include )
+if(NOT TARGET nemsio)
+  find_package(nemsio REQUIRED CONFIG)
+endif()
+
+if(NOT TARGET bacio_4)
+  find_package(bacio REQUIRED CONFIG)
+endif()
+
+if(NOT TARGET w3nco_d)
+  find_package(w3nco REQUIRED CONFIG)
+endif()
+
+if(NOT TARGET ip_d)
+  find_package(ip REQUIRED CONFIG)
+endif()
+
+if(NOT TARGET sp_d)
+  find_package(sp REQUIRED CONFIG)
+endif()
+
+find_package(OpenMP REQUIRED)
+
+
+set(lib_name ${PROJECT_NAME})
+set(versioned_lib_name ${PROJECT_NAME}_v${PROJECT_VERSION})
+
+add_library(${lib_name} STATIC ${fortran_src})
+set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME "${versioned_lib_name}")
+
+set(module_dir "${CMAKE_CURRENT_BINARY_DIR}/include")
+set_target_properties(${lib_name} PROPERTIES Fortran_MODULE_DIRECTORY "${module_dir}")
+
+target_include_directories(${lib_name} PUBLIC
+  $<BUILD_INTERFACE:${module_dir}>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>)
+
+target_link_libraries(${lib_name} PRIVATE nemsio bacio_4 w3nco_d ip_d sp_d ${OpenMP_Fortran_FLAGS})
+
+install(TARGETS ${lib_name}
+  EXPORT ${PROJECT_NAME}-config
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib) 
+install(DIRECTORY ${module_dir} DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(EXPORT ${PROJECT_NAME}-config DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+
+
