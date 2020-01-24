@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.15)
 project(nemsiogfs VERSION 2.2.1)
 set(${PROJECT_NAME}_VERSION ${PROJECT_VERSION} CACHE INTERNAL "${PROJECT_NAME} version number")
 
@@ -36,24 +36,25 @@ file(GLOB fortran_src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/*.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/src/*.F)
 
+set(CMAKE_FIND_PACKAGE_PREFER_CONFIG true)
 if(NOT TARGET nemsio)
-  find_package(nemsio REQUIRED CONFIG)
+  find_package(nemsio REQUIRED)
 endif()
 
 if(NOT TARGET bacio_4)
-  find_package(bacio REQUIRED CONFIG)
+  find_package(bacio REQUIRED)
 endif()
 
 if(NOT TARGET w3nco_d)
-  find_package(w3nco REQUIRED CONFIG)
+  find_package(w3nco REQUIRED)
 endif()
 
 if(NOT TARGET ip_d)
-  find_package(ip REQUIRED CONFIG)
+  find_package(ip REQUIRED)
 endif()
 
 if(NOT TARGET sp_d)
-  find_package(sp REQUIRED CONFIG)
+  find_package(sp REQUIRED)
 endif()
 
 find_package(OpenMP REQUIRED)
