@@ -5,6 +5,8 @@ set(${PROJECT_NAME}_VERSION ${PROJECT_VERSION} CACHE INTERNAL "${PROJECT_NAME} v
 enable_language (Fortran)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+option(OPENMP "use OpenMP threading" OFF)
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
   set(IntelComp true )
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU*" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang*")
@@ -57,8 +59,9 @@ if(NOT TARGET sp_d)
   find_package(sp REQUIRED)
 endif()
 
-find_package(OpenMP REQUIRED)
-
+if(OPENMP)
+  find_package(OpenMP)
+endif()
 
 set(lib_name ${PROJECT_NAME})
 set(versioned_lib_name ${PROJECT_NAME}_v${PROJECT_VERSION})
