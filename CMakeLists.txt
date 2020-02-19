@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.15)
 
 project(nemsiogfs VERSION 2.2.1 LANGUAGES Fortran)
 
-# set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-# "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-
 if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo|MinSizeRel)$")
   message(STATUS "Setting build type to 'Release' as none was specified.")
   set(CMAKE_BUILD_TYPE
@@ -59,15 +56,13 @@ set(module_dir ${CMAKE_CURRENT_BINARY_DIR}/include)
 add_library(${lib_name} STATIC ${fortran_src})
 set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${versioned_lib_name})
 set_target_properties(${lib_name} PROPERTIES Fortran_MODULE_DIRECTORY
-                                             "${module_dir}")
+                                             ${module_dir})
 set_target_properties(${lib_name} PROPERTIES COMPILE_FLAGS
                                              "${OpenMP_Fortran_FLAGS}")
 target_include_directories(
   ${lib_name} PUBLIC $<BUILD_INTERFACE:${module_dir}>
                      $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>)
 target_link_libraries(${lib_name} PRIVATE nemsio bacio_4 w3nco_d ip_d sp_d)
-# target_link_libraries(${lib_name} PRIVATE nemsio bacio_4 w3nco_d ip_d sp_d
-# ${OpenMP_Fortran_FLAGS})
 
 install(
   TARGETS ${lib_name}
