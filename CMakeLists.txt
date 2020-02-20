@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(nemsiogfs VERSION 2.2.1 LANGUAGES Fortran)
+file(STRINGS "VERSION" pVersion)
+
+project(nemsiogfs VERSION ${pVersion} LANGUAGES Fortran)
 
 if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo|MinSizeRel)$")
   message(STATUS "Setting build type to 'Release' as none was specified.")
@@ -17,11 +19,10 @@ if(NOT CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel|GNU|Clang|AppleClang|PGI)$")
 endif()
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel)$")
-  set(CMAKE_Fortran_FLAGS "-FR -axCore-AVX2")
+  set(CMAKE_Fortran_FLAGS "-g")
   set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
-  set(CMAKE_Fortran_FLAGS "-ffree-form")
-  set(CMAKE_Fortran_FLAGS_RELEASE "-g")
+  set(CMAKE_Fortran_FLAGS "-g")
 endif()
 
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG true)
@@ -59,6 +60,8 @@ set_target_properties(${lib_name} PROPERTIES Fortran_MODULE_DIRECTORY
                                              ${module_dir})
 set_target_properties(${lib_name} PROPERTIES COMPILE_FLAGS
                                              "${OpenMP_Fortran_FLAGS}")
+set_target_properties(${lib_name} PROPERTIES INTERFACE_LINK_LIBRARIES
+                                             ${lib_name})
 target_include_directories(
   ${lib_name} PUBLIC $<BUILD_INTERFACE:${module_dir}>
                      $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>)
