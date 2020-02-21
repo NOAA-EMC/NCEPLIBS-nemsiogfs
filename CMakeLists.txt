@@ -4,6 +4,8 @@ file(STRINGS "VERSION" pVersion)
 
 project(nemsiogfs VERSION ${pVersion} LANGUAGES Fortran)
 
+option(OPENMP "use OpenMP threading" OFF)
+
 if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo|MinSizeRel)$")
   message(STATUS "Setting build type to 'Release' as none was specified.")
   set(CMAKE_BUILD_TYPE
@@ -46,7 +48,9 @@ if(NOT TARGET sp_d)
   find_package(sp REQUIRED)
 endif()
 
-find_package(OpenMP REQUIRED)
+if(OPENMP)
+  find_package(OpenMP REQUIRED)
+endif()
 
 set(fortran_src src/nemsio_gfs.f90)
 
