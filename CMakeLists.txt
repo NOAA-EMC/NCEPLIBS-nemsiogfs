@@ -15,7 +15,7 @@ if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo|MinSizeRel)$")
                                                "MinSizeRel" "RelWithDebInfo")
 endif()
 
-if(NOT CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel|GNU|Clang|AppleClang|PGI)$")
+if(NOT CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel|GNU|Clang|AppleClang)$")
   message(
     WARNING "Compiler not officially supported: ${CMAKE_Fortran_COMPILER_ID}")
 endif()
@@ -49,7 +49,7 @@ if(NOT TARGET sp_d)
 endif()
 
 if(OPENMP)
-  find_package(OpenMP REQUIRED)
+  find_package(OpenMP REQUIRED COMPONENTS Fortran)
 endif()
 
 set(fortran_src src/nemsio_gfs.f90)
@@ -62,8 +62,10 @@ add_library(${lib_name} STATIC ${fortran_src})
 set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${versioned_lib_name})
 set_target_properties(${lib_name} PROPERTIES Fortran_MODULE_DIRECTORY
                                              ${module_dir})
-set_target_properties(${lib_name} PROPERTIES COMPILE_FLAGS
-                                             "${OpenMP_Fortran_FLAGS}")
+if(OpenMP_Fortran_FOUND)
+  set_target_properties(${lib_name} PROPERTIES COMPILE_FLAGS
+                                               "${OpenMP_Fortran_FLAGS}")
+endif()
 set_target_properties(${lib_name} PROPERTIES INTERFACE_LINK_LIBRARIES
                                              ${lib_name})
 target_include_directories(
