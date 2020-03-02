@@ -1,4 +1,4 @@
-# NEMSIO-GFS
+# NEMSIOGFS
 
 Byte accessible I/O C package (originally written by Mark Iredell and Jun Wang)
 
