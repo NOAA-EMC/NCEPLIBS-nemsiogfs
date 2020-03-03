@@ -1,6 +1,6 @@
 # NEMSIOGFS
 
-Byte accessible I/O C package (originally written by Mark Iredell and Jun Wang)
+Performs I/O for the NEMS-GFS model
 
 Code manager: Hang Lei
 
