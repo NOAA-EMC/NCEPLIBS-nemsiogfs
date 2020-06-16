@@ -1,0 +1,150 @@
+name: Build and Test
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    env:
+      FC: gfortran-9
+      CC: gcc-9
+
+    steps:
+
+    - name: checkout-pfunit
+      uses: actions/checkout@v2
+      with:
+        repository: Goddard-Fortran-Ecosystem/pFUnit
+        path: pfunit
+
+    - name: cache-pfunit
+      id: cache-pfunit
+      uses: actions/cache@v2
+      with:
+        path: ~/pfunit
+        key: pfunit-${{ runner.os }}-${{ hashFiles('pfunit/VERSION') }}
+
+    - name: build-pfunit
+      if: steps.cache-pfunit.outputs.cache-hit != 'true'
+      run: |
+        cd pfunit
+        mkdir build
+        cd build
+        cmake .. -DSKIP_MPI=YES -DSKIP_ESMF=YES -DSKIP_FHAMCREST=YES -DCMAKE_INSTALL_PREFIX=~/pfunit
+        make -j2
+        make install
+    
+    - name: checkout-bacio
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-bacio
+        path: bacio
+        ref: develop
+
+    - name: build-bacio
+      run: |
+        cd bacio
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/bacio
+        make -j2
+        make install
+
+    - name: checkout-sp
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-sp
+        path: sp
+        ref: develop
+
+    - name: build-sp
+      run: |
+        cd sp
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/sp
+        make -j2
+        make install
+
+    - name: checkout-w3nco
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-w3nco
+        path: w3nco
+        ref: develop
+
+    - name: build-w3nco
+      run: |
+        cd w3nco
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/w3nco
+        make -j2
+        make install          
+
+    - name: checkout-sigio
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-sigio
+        path: sigio
+        ref: develop
+
+    - name: build-sigio
+      run: |
+        cd sigio
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/sigio
+        make -j2
+        make install
+
+    - name: checkout-nemsio
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-nemsio
+        path: nemsio
+        ref: develop
+
+    - name: build-nemsio
+      run: |
+        cd nemsio
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/nemsio -DCMAKE_PREFIX_PATH=~
+        make -j2
+        make install
+
+  - name: checkout-ip
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-ip
+        path: ip
+        ref: develop
+
+    - name: build-ip
+      run: |
+        cd sp
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/ip
+        make -j2
+        make install  
+
+    - name: checkout-nemsiogfs
+      uses: actions/checkout@v2
+      with: 
+        path: nemsiogfs
+        submodules: true
+
+    - name: build-nemsiogfs
+      run: |
+        cd nemsiogfs
+        mkdir build 
+        cd build
+        cmake .. -DENABLE_TESTS=ON -DCMAKE_PREFIX_PATH="~/pfunit;~/"
+        make -j2
+    
+    - name: test-nemsiogfs
+      run: |
+        cd $GITHUB_WORKSPACE/nemsiogfs/build
+        make test
+
