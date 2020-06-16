@@ -126,7 +126,7 @@ jobs:
 
     - name: build-ip
       run: |
-        cd sp
+        cd ip
         mkdir build
         cd build
         cmake .. -DCMAKE_INSTALL_PREFIX=~/ip
