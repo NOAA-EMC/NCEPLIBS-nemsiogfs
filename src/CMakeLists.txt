@@ -15,7 +15,7 @@ add_library(${PROJECT_NAME}::${lib_name} ALIAS ${lib_name})
 
 set_target_properties(${lib_name} PROPERTIES Fortran_MODULE_DIRECTORY ${module_dir})
 if(OpenMP_Fortran_FOUND)
-  set_target_properties(${lib_name} PROPERTIES COMPILE_FLAGS "${OpenMP_Fortran_FLAGS}")
+  target_link_libraries(${lib_name} OpenMP::OpenMP_Fortran)
 endif()
 set_target_properties(${lib_name} PROPERTIES INTERFACE_LINK_LIBRARIES ${lib_name})
 

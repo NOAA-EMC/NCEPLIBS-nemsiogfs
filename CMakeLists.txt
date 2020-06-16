@@ -21,8 +21,6 @@ if(NOT CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel|GNU|Clang|AppleClang)$")
     WARNING "Compiler not officially supported: ${CMAKE_Fortran_COMPILER_ID}")
 endif()
 
-set(CMAKE_FIND_PACKAGE_PREFER_CONFIG true)
-
 find_package(nemsio REQUIRED)
 find_package(bacio REQUIRED)
 find_package(w3nco REQUIRED)
