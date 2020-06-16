@@ -23,8 +23,7 @@ target_include_directories(${lib_name} PUBLIC
   $<BUILD_INTERFACE:${module_dir}>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>)
 
-target_link_libraries(${lib_name} PRIVATE
-  nemsio::nemsio bacio::bacio_4 w3nco::w3nco_d ip::ip_d sp::sp_d)
+target_link_libraries(${lib_name} PRIVATE nemsio::nemsio)
 list(APPEND LIB_TARGETS ${lib_name})
 
 install(DIRECTORY ${module_dir} DESTINATION ${CMAKE_INSTALL_PREFIX})

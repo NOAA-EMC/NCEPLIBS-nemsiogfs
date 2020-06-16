@@ -22,10 +22,6 @@ if(NOT CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel|GNU|Clang|AppleClang)$")
 endif()
 
 find_package(nemsio REQUIRED)
-find_package(bacio REQUIRED)
-find_package(w3nco REQUIRED)
-find_package(ip REQUIRED)
-find_package(sp REQUIRED)
 
 if(OPENMP)
   find_package(OpenMP REQUIRED COMPONENTS Fortran)
