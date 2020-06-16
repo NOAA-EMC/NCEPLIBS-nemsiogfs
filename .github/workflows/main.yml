@@ -113,7 +113,7 @@ jobs:
         make -j2
         make install
 
-  - name: checkout-ip
+   - name: checkout-ip
       uses: actions/checkout@v2
       with:
         repository: NOAA-EMC/NCEPLIBS-ip
