@@ -21,7 +21,7 @@ set_target_properties(${lib_name} PROPERTIES INTERFACE_LINK_LIBRARIES ${lib_name
 
 target_include_directories(${lib_name} PUBLIC
   $<BUILD_INTERFACE:${module_dir}>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>)
+  $<INSTALL_INTERFACE:include>)
 
 target_link_libraries(${lib_name} PRIVATE nemsio::nemsio)
 list(APPEND LIB_TARGETS ${lib_name})
