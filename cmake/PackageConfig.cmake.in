@@ -16,4 +16,4 @@ endif()
 check_required_components("@PROJECT_NAME@")
 
 get_target_property(location @PROJECT_NAME@::@PROJECT_NAME@ LOCATION)
-message(STATUS "Found @PROJECT_NAME@: ${location} (found version @PROJECT_VERSION@)")
+message(STATUS "Found @PROJECT_NAME@: ${location} (found version \"@PROJECT_VERSION@\")")
