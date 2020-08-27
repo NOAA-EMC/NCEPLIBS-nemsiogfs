@@ -1,10 +1,10 @@
 set(fortran_src nemsio_gfs.f90)
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel)$")
-  set(CMAKE_Fortran_FLAGS "-g")
+  set(CMAKE_Fortran_FLAGS "-g ${CMAKE_Fortran_FLAGS}")
   set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
-elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
-  set(CMAKE_Fortran_FLAGS "-g")
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^(GNU)$")
+  set(CMAKE_Fortran_FLAGS "-g ${CMAKE_Fortran_FLAGS}")
 endif()
 
 set(lib_name ${PROJECT_NAME})
