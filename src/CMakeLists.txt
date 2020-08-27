@@ -1,11 +1,15 @@
 set(fortran_src nemsio_gfs.f90)
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel)$")
-  set(CMAKE_Fortran_FLAGS "-g")
+  set(CMAKE_Fortran_FLAGS "-g ${CMAKE_Fortran_FLAGS}")
   set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
-  set(CMAKE_Fortran_FLAGS "-g")
+  set(CMAKE_Fortran_FLAGS "-g ${CMAKE_Fortran_FLAGS}")
 endif()
+
+if(${CMAKE_Fortran_COMPILER_ID} MATCHES "^(GNU)$" AND ${CMAKE_Fortran_COMPILER_VERSION} VERSION_GREATER_EQUAL 10)
+   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -w -fallow-argument-mismatch -fallow-invalid-boz")
+ endif()
 
 set(lib_name ${PROJECT_NAME})
 set(module_dir ${CMAKE_CURRENT_BINARY_DIR}/include)
