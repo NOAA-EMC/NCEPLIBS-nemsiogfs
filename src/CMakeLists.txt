@@ -14,10 +14,6 @@ add_library(${lib_name} STATIC ${fortran_src})
 add_library(${PROJECT_NAME}::${lib_name} ALIAS ${lib_name})
 
 set_target_properties(${lib_name} PROPERTIES Fortran_MODULE_DIRECTORY ${module_dir})
-if(OpenMP_Fortran_FOUND)
-  target_link_libraries(${lib_name} PRIVATE OpenMP::OpenMP_Fortran)
-endif()
-set_target_properties(${lib_name} PROPERTIES INTERFACE_LINK_LIBRARIES ${lib_name})
 
 target_include_directories(${lib_name} PUBLIC
   $<BUILD_INTERFACE:${module_dir}>

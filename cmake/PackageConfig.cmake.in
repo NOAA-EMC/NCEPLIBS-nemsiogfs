@@ -9,10 +9,6 @@ get_target_property(@PROJECT_NAME@_BUILD_TYPES @PROJECT_NAME@::@PROJECT_NAME@ IM
 
 find_dependency(nemsio CONFIG)
 
-if(@OPENMP@)
-  find_dependency(OpenMP)
-endif()
-
 check_required_components("@PROJECT_NAME@")
 
 get_target_property(location @PROJECT_NAME@::@PROJECT_NAME@ LOCATION)
