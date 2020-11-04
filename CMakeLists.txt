@@ -4,8 +4,6 @@ file(STRINGS "VERSION" pVersion)
 
 project(nemsiogfs VERSION ${pVersion} LANGUAGES Fortran)
 
-option(ENABLE_TESTS "Enable tests" OFF)
-
 if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo|MinSizeRel)$")
   message(STATUS "Setting build type to 'Release' as none was specified.")
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
