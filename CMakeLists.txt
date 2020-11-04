@@ -21,8 +21,8 @@ find_package(nemsio REQUIRED)
 
 add_subdirectory(src)
 
-if(ENABLE_TESTS)
-  find_package(PFUNIT REQUIRED)
-  enable_testing()
-  add_subdirectory(tests)
+# Build and run tests.
+include(CTest)
+if (BUILD_TESTING)
+    add_subdirectory(tests)
 endif()
