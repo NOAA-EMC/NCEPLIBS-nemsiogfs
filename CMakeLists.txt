@@ -4,6 +4,8 @@ file(STRINGS "VERSION" pVersion)
 
 project(nemsiogfs VERSION ${pVersion} LANGUAGES Fortran)
 
+include(GNUInstallDirs)
+
 option(ENABLE_TESTS "Enable tests" OFF)
 
 if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo|MinSizeRel)$")
