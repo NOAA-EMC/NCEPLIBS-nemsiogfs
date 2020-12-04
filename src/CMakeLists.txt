@@ -39,14 +39,14 @@ export(EXPORT ${PROJECT_NAME}Exports
   NAMESPACE ${PROJECT_NAME}::
   FILE ${PROJECT_NAME}-targets.cmake)
 
-# sigio-config.cmake
+# nemsiogfs-config.cmake
 configure_package_config_file(
   ${CMAKE_SOURCE_DIR}/cmake/PackageConfig.cmake.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-config.cmake
   INSTALL_DESTINATION ${CONFIG_INSTALL_DESTINATION})
 install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-config.cmake
   DESTINATION ${CONFIG_INSTALL_DESTINATION})
 
-# sigio-config-version.cmake
+# nemsiogfs-config-version.cmake
 write_basic_package_version_file(
   ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
   VERSION ${PROJECT_VERSION}

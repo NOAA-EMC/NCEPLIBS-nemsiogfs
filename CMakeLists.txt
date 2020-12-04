@@ -6,8 +6,6 @@ project(nemsiogfs VERSION ${pVersion} LANGUAGES Fortran)
 
 include(GNUInstallDirs)
 
-option(ENABLE_TESTS "Enable tests" OFF)
-
 if(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo|MinSizeRel)$")
   message(STATUS "Setting build type to 'Release' as none was specified.")
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
@@ -23,8 +21,8 @@ find_package(nemsio REQUIRED)
 
 add_subdirectory(src)
 
-if(ENABLE_TESTS)
-  find_package(PFUNIT REQUIRED)
-  enable_testing()
-  add_subdirectory(tests)
+# Build and run tests.
+include(CTest)
+if (BUILD_TESTING)
+    add_subdirectory(tests)
 endif()
