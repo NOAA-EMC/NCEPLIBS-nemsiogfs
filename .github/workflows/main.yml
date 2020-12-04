@@ -4,6 +4,9 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        openmp: [ON, OFF]
     env:
       FC: gfortran-9
       CC: gcc-9
@@ -14,29 +17,6 @@ jobs:
       run: |
         sudo apt-get install libmpich-dev
 
-    - name: checkout-pfunit
-      uses: actions/checkout@v2
-      with:
-        repository: Goddard-Fortran-Ecosystem/pFUnit
-        path: pfunit
-
-    - name: cache-pfunit
-      id: cache-pfunit
-      uses: actions/cache@v2
-      with:
-        path: ~/pfunit
-        key: pfunit-${{ runner.os }}-${{ hashFiles('pfunit/VERSION') }}
-
-    - name: build-pfunit
-      if: steps.cache-pfunit.outputs.cache-hit != 'true'
-      run: |
-        cd pfunit
-        mkdir build
-        cd build
-        cmake .. -DSKIP_MPI=YES -DSKIP_ESMF=YES -DSKIP_FHAMCREST=YES -DCMAKE_INSTALL_PREFIX=~/pfunit
-        make -j2
-        make install
-    
     - name: checkout-bacio
       uses: actions/checkout@v2
       with:
@@ -144,7 +124,7 @@ jobs:
         cd nemsiogfs
         mkdir build 
         cd build
-        cmake .. -DENABLE_TESTS=ON -DOPENMP=ON -DCMAKE_PREFIX_PATH="~/pfunit;~/"
+        cmake .. -DOPENMP=${{ matrix.openmp }}  -DCMAKE_PREFIX_PATH="~/"
         make -j2
     
     - name: test-nemsiogfs
