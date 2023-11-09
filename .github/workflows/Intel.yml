@@ -1,0 +1,151 @@
+name: Intel
+on:
+  push:
+    branches:
+    - develop
+  pull_request:
+    branches:
+    - develop
+
+# Use custom shell with -l so .bash_profile is sourced which loads intel/oneapi/setvars.sh
+# without having to do it in manually every step
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
+jobs:
+  Intel:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compilers: ["CC=icc FC=ifort", "CC=icx FC=ifx"]
+
+    steps:
+
+    # See https://software.intel.com/content/www/us/en/develop/articles/oneapi-repo-instructions.html
+    - name: install-intel
+      run: |
+        cd /tmp
+        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+        sudo apt-get update
+        sudo apt-get install intel-oneapi-dev-utilities intel-oneapi-mpi-devel intel-oneapi-openmp intel-oneapi-compiler-fortran intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
+        echo "source /opt/intel/oneapi/setvars.sh" >> ~/.bash_profile
+        echo export ${{ matrix.compilers }} >> ~/.bash_profile
+
+    - name: checkout-bacio
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-bacio
+        path: bacio
+        ref: develop
+
+    - name: build-bacio
+      run: |
+        cd bacio
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/bacio
+        make -j2
+        make install
+
+    - name: checkout-sp
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-sp
+        path: sp
+        ref: develop
+
+    - name: build-sp
+      run: |
+        cd sp
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/sp
+        make -j2
+        make install
+
+    - name: checkout-w3emc
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-w3emc
+        path: w3emc
+        ref: develop
+
+    - name: build-w3emc
+      run: |
+        cd w3emc
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/w3emc -DCMAKE_PREFIX_PATH=~ -DBUILD_WITH_BUFR=OFF
+        make -j2
+        make install          
+
+    - name: checkout-sigio
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-sigio
+        path: sigio
+        ref: develop
+
+    - name: build-sigio
+      run: |
+        cd sigio
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/sigio
+        make -j2
+        make install
+
+    - name: checkout-nemsio
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-nemsio
+        path: nemsio
+        ref: develop
+
+    - name: build-nemsio
+      run: |
+        cd nemsio
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/nemsio -DCMAKE_PREFIX_PATH=~
+        make -j2
+        make install
+
+    - name: checkout-ip
+      uses: actions/checkout@v2
+      with:
+        repository: NOAA-EMC/NCEPLIBS-ip
+        path: ip
+        ref: develop
+
+    - name: build-ip
+      run: |
+        cd ip
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=~/ip -DCMAKE_PREFIX_PATH=~
+        make -j2
+        make install  
+
+    - name: checkout
+      uses: actions/checkout@v4
+      with: 
+        path: nemsiogfs
+        submodules: true
+
+    - name: build
+      run: |
+        cd nemsiogfs
+        mkdir build 
+        cd build
+        ${{ matrix.compilers }} cmake .. -DBUILD_TESTING=ON
+        make -j2 VERBOSE=1
+    
+    - name: test
+      run: |
+        cd $GITHUB_WORKSPACE/nemsiogfs/build
+        ctest --rerun-failed --output-on-failure
