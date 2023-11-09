@@ -51,22 +51,6 @@ jobs:
         make -j2
         make install
 
-    - name: checkout-sp
-      uses: actions/checkout@v2
-      with:
-        repository: NOAA-EMC/NCEPLIBS-sp
-        path: sp
-        ref: develop
-
-    - name: build-sp
-      run: |
-        cd sp
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=~/sp
-        make -j2
-        make install
-
     - name: checkout-w3emc
       uses: actions/checkout@v2
       with:
@@ -82,22 +66,6 @@ jobs:
         cmake .. -DCMAKE_INSTALL_PREFIX=~/w3emc -DCMAKE_PREFIX_PATH=~ -DBUILD_WITH_BUFR=OFF
         make -j2
         make install          
-
-    - name: checkout-sigio
-      uses: actions/checkout@v2
-      with:
-        repository: NOAA-EMC/NCEPLIBS-sigio
-        path: sigio
-        ref: develop
-
-    - name: build-sigio
-      run: |
-        cd sigio
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=~/sigio
-        make -j2
-        make install
 
     - name: checkout-nemsio
       uses: actions/checkout@v2
@@ -115,22 +83,6 @@ jobs:
         make -j2
         make install
 
-    - name: checkout-ip
-      uses: actions/checkout@v2
-      with:
-        repository: NOAA-EMC/NCEPLIBS-ip
-        path: ip
-        ref: develop
-
-    - name: build-ip
-      run: |
-        cd ip
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=~/ip -DCMAKE_PREFIX_PATH=~
-        make -j2
-        make install  
-
     - name: checkout
       uses: actions/checkout@v4
       with: 
@@ -142,7 +94,7 @@ jobs:
         cd nemsiogfs
         mkdir build 
         cd build
-        ${{ matrix.compilers }} cmake .. -DBUILD_TESTING=ON
+        ${{ matrix.compilers }} cmake .. -DBUILD_TESTING=ON -DCMAKE_PREFIX_PATH=~
         make -j2 VERBOSE=1
     
     - name: test

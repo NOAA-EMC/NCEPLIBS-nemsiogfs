@@ -33,22 +33,6 @@ jobs:
         make -j2
         make install
 
-    - name: checkout-sp
-      uses: actions/checkout@v2
-      with:
-        repository: NOAA-EMC/NCEPLIBS-sp
-        path: sp
-        ref: develop
-
-    - name: build-sp
-      run: |
-        cd sp
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=~/sp
-        make -j2
-        make install
-
     - name: checkout-w3emc
       uses: actions/checkout@v2
       with:
@@ -65,22 +49,6 @@ jobs:
         make -j2
         make install          
 
-    - name: checkout-sigio
-      uses: actions/checkout@v2
-      with:
-        repository: NOAA-EMC/NCEPLIBS-sigio
-        path: sigio
-        ref: develop
-
-    - name: build-sigio
-      run: |
-        cd sigio
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=~/sigio
-        make -j2
-        make install
-
     - name: checkout-nemsio
       uses: actions/checkout@v2
       with:
@@ -96,22 +64,6 @@ jobs:
         cmake .. -DCMAKE_INSTALL_PREFIX=~/nemsio -DCMAKE_PREFIX_PATH=~
         make -j2
         make install
-
-    - name: checkout-ip
-      uses: actions/checkout@v2
-      with:
-        repository: NOAA-EMC/NCEPLIBS-ip
-        path: ip
-        ref: develop
-
-    - name: build-ip
-      run: |
-        cd ip
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=~/ip -DCMAKE_PREFIX_PATH=~
-        make -j2
-        make install  
 
     - name: checkout-nemsiogfs
       uses: actions/checkout@v2
