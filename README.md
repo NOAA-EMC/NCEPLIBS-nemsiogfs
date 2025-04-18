@@ -33,6 +33,8 @@ make -j2
 make install
 ```
 
+NCEPLIBS-nemsiogfs is also available through [Spack](https://spack.io) as '[nemsiogfs](https://github.com/spack/spack/tree/develop/var/spack/repos/builtin/packages/nemsiogfs)'.
+
 ## Disclaimer
 
 The United States Department of Commerce (DOC) GitHub project code is
