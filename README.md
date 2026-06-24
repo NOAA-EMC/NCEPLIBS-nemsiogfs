@@ -1,4 +1,5 @@
-![Status](https://github.com/NOAA-EMC/NCEPLIBS-nemsiogfs/workflows/Build%20and%20Test/badge.svg)
+>[!CAUTION]
+>This code is deprecated. It will receive no further support, and should not be incorporated into NWS production code.
 
 # NEMSIOGFS
 
